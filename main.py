@@ -274,12 +274,8 @@ def MyTest():
     # Effect = lambda : Crusader(position = 1)
     # Other = Effect()
     # print(Other.health)
-
-    
-        
-    
-        
-MyTest()
+     
+main()
 
 
 # TODO:

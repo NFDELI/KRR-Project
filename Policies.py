@@ -71,7 +71,7 @@ class Policies:
             for enemy in valid_targets:
                 # Single-Target Action
                 can_kill, can_stun, average_damage, total_damage = self.EvaluateTarget(action_value, enemy)
-                priority = self.CalculatePriority(can_kill, can_stun, total_damage, enemy)
+                priority = self.CalculatePriority(can_kill, can_stun, enemy)
                 # heapq.heappush(attack_plan_priority, (priority, enemy, action_value))
                 return (priority, enemy, action_value)
     
@@ -154,16 +154,16 @@ class Policies:
                 total_health_priority = 0
                 
                 for ally in valid_targets:
-                    average_heal = ((heal_range[0] + heal_range[1]) / 2)
-                    effective_heal = self.heal_weight * (min(average_heal, ally.max_health - ally.health))
-                    death_door_priority = self.death_door_weight * (2 if ally.is_at_death_door else 0)
+                    average_heal = (heal_range[0] + heal_range[1]) / 2
+                    effective_heal = min(average_heal, ally.max_health - ally.health)
+                    death_door_priority = 2 if ally.is_at_death_door else 0
                     
                     total_death_door_priority += death_door_priority
                     total_effective_heal += effective_heal
-                    total_health_priority += self.health_weight * ally.health
+                    total_health_priority += ally.health
 
-                total_priority = total_death_door_priority + total_effective_heal + total_health_priority
-                return (-total_priority, valid_targets[0], action_value)
+                priority = (-total_death_door_priority, - total_effective_heal, total_health_priority)
+                return (priority, valid_targets[0], action_value)
 
             else:
                 # Single-target healing (For now, only battlefield Medicine, 'single-target' can cure)
@@ -175,11 +175,11 @@ class Policies:
                             if effect in ["Bleed", "Blight"]:
                                 cure_value += effect.duration * effect.value
                                 
-                    average_heal = ((heal_range[0] + heal_range[1]) / 2)
-                    effective_heal = self.heal_weight * (min(average_heal, ally.max_health - ally.health) + cure_value)
-                    death_door_priority = self.death_door_weight * (2 if ally.is_at_death_door else 0)
+                    average_heal = (heal_range[0] + heal_range[1]) / 2
+                    effective_heal = min(average_heal, ally.max_health - ally.health) + cure_value
+                    death_door_priority = 2 if ally.is_at_death_door else 0
                     
-                    priority =  -death_door_priority - effective_heal + (ally.health * self.health_weight)
+                    priority = (-death_door_priority, -effective_heal, ally.health)
                     plan = (priority, ally, action_value)
                     # Min-Heap Comparison
                     if not best_plan or plan[0] < best_plan[0]:
@@ -223,36 +223,25 @@ class Policies:
         for enemy in valid_targets:
             can_kill, can_stun, average_damage, total_damage = self.EvaluateTarget(action_value, enemy)
             
-            total_kill_priority += self.kill_weight * (1 if can_kill else 0)
-            total_stun_priority += self.stun_weight * (1 if can_stun and not can_kill else 0)
-            total_turn_priority += self.turn_weight * (1 if not enemy.has_taken_action else 0)
-            total_rank_priority += self.rank_weight * (enemy.position)
-            total_health_priority += self.health_weight * (enemy.health)
+            total_kill_priority += 1 if can_kill else 0
+            total_stun_priority += 1 if can_stun and not can_kill else 0
+            total_turn_priority += 1 if not enemy.has_taken_action else 0
+            total_rank_priority += -enemy.position
+            total_health_priority += -enemy.health
         
-        total_priority = total_kill_priority + total_stun_priority + total_turn_priority + total_rank_priority + total_health_priority
-        return -total_priority
+        # total_priority = total_kill_priority + total_stun_priority + total_turn_priority + total_rank_priority + total_health_priority
+        # return -total_priority
+        return (-total_kill_priority, -total_stun_priority, -total_turn_priority, -total_rank_priority, -total_health_priority)
 
-    def CalculatePriority(self, can_kill, can_stun, total_damage, enemy):
-        kill_priority = self.kill_weight * (1 if can_kill else 0)
-        # Using a stun action while killing the enemy at the same time makes the stun have no value!\
-        stun_priority = 0
-        if can_stun:
-            if enemy.is_stunned:
-                stun_priority = -1000
-            elif can_kill:
-                stun_priority = 0
-            else:
-                stun_priority = 1
+    def CalculatePriority(self, can_kill, can_stun, enemy):
+        kill_priority = 1 if can_kill else 0
+        # Using a stun action while killing the enemy at the same time makes the stun have no value!    
+        stun_priority = 1 if can_stun and not enemy.is_stunned and not can_kill else 0
+        turn_priority = 1 if not enemy.has_taken_action else 0
+        rank_priority = -enemy.position
+        health_priority = -enemy.health
         
-        # stun_priority = self.stun_weight * (1 if can_stun and not enemy.is_stunned else 0)
-        turn_priority = self.turn_weight * (1 if not enemy.has_taken_action else 0)
-        rank_priority = self.rank_weight * (enemy.position)
-        health_priority = self.health_weight * (enemy.health)
-        
-        
-        total_priority = kill_priority + stun_priority + turn_priority + rank_priority + health_priority
-        return -total_priority
-        #return (-kill_priority, -stun_priority, -turn_priority, rank_priority, health_priority)
+        return (-kill_priority, -stun_priority, -turn_priority, rank_priority, health_priority)
 
     def EvaluateTarget(self, action_value, enemy):
         average_damage = ((action_value.damage_range[0] + action_value.damage_range[1]) / 2) * (1 - enemy.protection)

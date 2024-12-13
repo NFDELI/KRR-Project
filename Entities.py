@@ -90,11 +90,11 @@ class Character:
                 self.is_stunned = True
             
             if(effect.name == "Knockback"):
-                effect.ApplyEffect(self)
+                effect.ApplyEffect(self, policy_evaluator)
                 self.ReduceStatusEffectsDuration(effect)
             
             if(effect.name == "Increase_Stun_Res"):
-                effect.ApplyEffect(self)
+                effect.ApplyEffect(self, policy_evaluator)
                 self.ReduceStatusEffectsDuration(effect)
             
             if(effect.name == "Increase_Prot"):
@@ -110,7 +110,7 @@ class Character:
                 self.ReduceStatusEffectsDuration(effect)
                 
             if(effect.name == "Mark"):
-                effect.ApplyEffect(self)
+                effect.ApplyEffect(self, policy_evaluator)
                 self.ReduceStatusEffectsDuration(effect)
             
             if(effect.name == "Increase_Crit_Taken"):
