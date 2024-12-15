@@ -2,7 +2,7 @@ import heapq
 import random
 
 class Policies:
-    def __init__(self, character, kill_weight = 9, stun_weight = 8, turn_weight = 10, rank_weight = 7, health_weight = 6, death_door_weight = 11, heal_weight = 10, damage_weight = 0):
+    def __init__(self, character, kill_weight = 9, stun_weight = 8, turn_weight = 10, rank_weight = 7, health_weight = 6, death_door_weight = 11, heal_weight = 20, damage_weight = 0):
         self.character = character
         self.kill_weight = kill_weight
         self.stun_weight = stun_weight

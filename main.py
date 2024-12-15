@@ -280,12 +280,9 @@ main()
 
 
 # TODO:
-# Add Policy/Strategies for each hero
+# Add Policy/Strategies for each hero (Make unique tunable parameters for each hero)
 # Add Policy Evaluation (Need to Add Evaluation for Entering Death's Door and Killing Heroes or Enemies)
-# Need to Test BestHealPolicy. (Ok, need to check specifics next, like which heal is being used? Bulk heal or spread heal?)
 # Need to Add different alternative policies to test performance of policy.
-# Need to add value to cure DOTs. (Need Testing!)
-# BestActionPolicy can be further improved where for example, Enemy Cutthroat has 3 hp, and 6 damage blight DOT, not yet taken turn, Highwayman still finished him off even though cutthroat will die anyway.
 
 #TODO:
 """
