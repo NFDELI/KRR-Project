@@ -2,7 +2,7 @@ import heapq
 import random
 
 class Policies:
-    def __init__(self, character, kill_weight = 1.0, stun_weight = 0.5, turn_weight = 1.0, rank_weight = 0.2, health_weight = 0.1, death_door_weight = 1.0, heal_weight = 0.5, damage_weight = 0.4):
+    def __init__(self, character, kill_weight = 9, stun_weight = 8, turn_weight = 10, rank_weight = 7, health_weight = 6, death_door_weight = 11, heal_weight = 10, damage_weight = 0):
         self.character = character
         self.kill_weight = kill_weight
         self.stun_weight = stun_weight
@@ -19,6 +19,7 @@ class Policies:
         # Format = (Priority, target, Action)
         action_plan_priority = []
         for action_key, action_value in self.character.actions_dict.items():
+            print(f"Checking Action {action_value.name}")
             if not self.IsActionUsable(action_value):
                 continue
             if action_value.is_heal:
@@ -34,10 +35,12 @@ class Policies:
                 # Priority Format: kill/stun_priority = (kill_priority, stun_priority, turn_priority, rank_priority, health_priority)
                 damage_evaluation = self.EvaluateDamageAction(action_value, enemies)
                 if damage_evaluation:
+                    #print(type(damage_evaluation))
                     heapq.heappush(action_plan_priority, damage_evaluation)
         
         if action_plan_priority:
             best_priority, best_target, best_action = heapq.heappop(action_plan_priority)
+            #print(f"Best Priority is {action_value.name} with {best_priority}")
             if best_action.is_buff or best_action.is_heal:
                 target_grid = teamates
             else:
@@ -49,7 +52,7 @@ class Policies:
 
 
     def EvaluateDamageAction(self, action_value, enemies):
-        # attack_plan_priority = []
+        attack_plan_priority = []
         valid_targets = [
             enemy for enemy in enemies.values()
             if not enemy.is_corpse and enemy.position in action_value.target_position
@@ -65,15 +68,18 @@ class Policies:
             priority = self.CalculateMultiTargetPriority(action_value, valid_targets)
             if priority:
                 # The action_value.target_position[0] is not an error, the game will check all elements in the target_position anyway.
-                # heapq.heappush(attack_plan_priority, (priority, valid_targets[0], action_value))
-                return (priority, valid_targets[0], action_value)
+                heapq.heappush(attack_plan_priority, (priority, valid_targets[0], action_value))
         else:
             for enemy in valid_targets:
                 # Single-Target Action
                 can_kill, can_stun, average_damage, total_damage = self.EvaluateTarget(action_value, enemy)
                 priority = self.CalculatePriority(can_kill, can_stun, enemy)
-                # heapq.heappush(attack_plan_priority, (priority, enemy, action_value))
-                return (priority, enemy, action_value)
+                heapq.heappush(attack_plan_priority, (priority, enemy, action_value))
+        
+        if attack_plan_priority:
+            return heapq.heappop(attack_plan_priority)
+        else:
+            return None
     
     def HighestDamageOutputPolicy(self, enemies):
         # Priority queue for actions.
@@ -130,63 +136,80 @@ class Policies:
     # Healing Policy is placed here because Vestal is the main healer. (The Plague Docter Mainly Cures DOTs)
     # This Policy is going to
     def BestHealPolicy(self, action_value, allies):        
-            if not self.IsActionUsable(action_value) or not action_value.is_heal:
-                return
+        if not self.IsActionUsable(action_value) or not action_value.is_heal:
+            return
+        
+        # Separate living targets and corpses.
+        living_targets = [ally for ally in allies.values() if not ally.is_corpse]
+        
+        valid_targets = [
+            ally for ally in living_targets
+            if ally.position in action_value.target_position
+        ]
+        
+        if not valid_targets:
+            print(f"No valid targets found for action: {action_value.name}")
+            return
+        
+        heal_range = action_value.apply_status_effects[0].effect_value
+        heal_plan_priority = []
+        
+        if action_value.is_multi_target:
+            # Multi-target healing
+            total_death_door_priority = 0
+            total_effective_heal = 0
+            total_health_priority = 0
             
-            # Separate living targets and corpses.
-            living_targets = [ally for ally in allies.values() if not ally.is_corpse]
-            
-            valid_targets = [
-                ally for ally in living_targets
-                if ally.position in action_value.target_position
+            for ally in valid_targets:
+                average_heal = (heal_range[0] + heal_range[1]) / 2
+                effective_heal = min(average_heal, ally.max_health - ally.health)
+                death_door_priority = 1 if ally.is_at_death_door else 0
+                
+                total_death_door_priority += death_door_priority
+                total_effective_heal += effective_heal
+                # Prioritize allies with lower health
+                total_health_priority += -ally.health
+                
+            total_priorities = [
+                (self.death_door_weight, -total_death_door_priority),
+                (self.heal_weight, -total_effective_heal),
+                (self.health_weight, total_health_priority)
             ]
             
-            if not valid_targets:
-                print(f"No valid targets found for action: {action_value.name}")
-                return
+            sorted_total_priorities = sorted(total_priorities, key = lambda x: x[0], reverse = True)
+            tuple_sorted_total_priorities = tuple(x[1] for x in sorted_total_priorities)
             
-            heal_range = action_value.apply_status_effects[0].effect_value
-            
-            if action_value.is_multi_target:
-                # Multi-target healing
-                total_death_door_priority = 0
-                total_effective_heal = 0
-                total_health_priority = 0
-                
-                for ally in valid_targets:
-                    average_heal = (heal_range[0] + heal_range[1]) / 2
-                    effective_heal = min(average_heal, ally.max_health - ally.health)
-                    death_door_priority = 2 if ally.is_at_death_door else 0
-                    
-                    total_death_door_priority += death_door_priority
-                    total_effective_heal += effective_heal
-                    total_health_priority += ally.health
+            heapq.heappush(heal_plan_priority, (tuple_sorted_total_priorities, valid_targets[0], action_value))
 
-                priority = (-total_death_door_priority, - total_effective_heal, total_health_priority)
-                return (priority, valid_targets[0], action_value)
-
-            else:
-                # Single-target healing (For now, only battlefield Medicine, 'single-target' can cure)
-                best_plan = None
-                cure_value = 0
+        else:
+            # Single-target healing (For now, only battlefield Medicine, 'single-target' can cure)
+            for ally in valid_targets:
+                cure_value = 0                    
                 if action_value.apply_status_effects[0].name == "Cure":
-                    for ally in valid_targets:
-                        for effect in ally.status_effects:
-                            if effect in ["Bleed", "Blight"]:
-                                cure_value += effect.duration * effect.value
-                                
-                    average_heal = (heal_range[0] + heal_range[1]) / 2
-                    effective_heal = min(average_heal, ally.max_health - ally.health) + cure_value
-                    death_door_priority = 2 if ally.is_at_death_door else 0
-                    
-                    priority = (-death_door_priority, -effective_heal, ally.health)
-                    plan = (priority, ally, action_value)
-                    # Min-Heap Comparison
-                    if not best_plan or plan[0] < best_plan[0]:
-                        best_plan = plan
-                return best_plan
+                    for effect in ally.status_effects:
+                        if effect in ["Bleed", "Blight"]:
+                            cure_value += effect.duration * effect.value
+                            
+                average_heal = (heal_range[0] + heal_range[1]) / 2
+                effective_heal = min(average_heal, ally.max_health - ally.health) + cure_value
+                death_door_priority = 1 if ally.is_at_death_door else 0
+                
+                priorities = [
+                    (self.death_door_weight, -death_door_priority),
+                    (self.heal_weight, -effective_heal),
+                    (self.health_weight, -ally.health)
+                ]
+                
+                sorted_priorites = sorted(priorities, key = lambda x: x[0], reverse = True)
+                tuple_sorted_priorities = tuple(x[1] for x in sorted_priorites)
+                
+                heapq.heappush(heal_plan_priority, (tuple_sorted_priorities, ally, action_value))
+                
+        if heal_plan_priority:
+            return heapq.heappop(heal_plan_priority)
+        else:
+            return None
         
-
     # Checks if character is in proper position and action is available.
     def IsActionUsable(self, action):
         if not action or (action.limited_use <= 0 and not action.is_unlimited):
@@ -223,25 +246,42 @@ class Policies:
         for enemy in valid_targets:
             can_kill, can_stun, average_damage, total_damage = self.EvaluateTarget(action_value, enemy)
             
-            total_kill_priority += 1 if can_kill else 0
-            total_stun_priority += 1 if can_stun and not can_kill else 0
-            total_turn_priority += 1 if not enemy.has_taken_action else 0
+            total_kill_priority += -1 if can_kill else 0
+            total_stun_priority += -1 if can_stun and not can_kill else 0
+            total_turn_priority += -1 if not enemy.has_taken_action else 0
             total_rank_priority += -enemy.position
             total_health_priority += -enemy.health
         
-        # total_priority = total_kill_priority + total_stun_priority + total_turn_priority + total_rank_priority + total_health_priority
-        # return -total_priority
-        return (-total_kill_priority, -total_stun_priority, -total_turn_priority, -total_rank_priority, -total_health_priority)
+        total_priorities = [
+            (self.kill_weight, total_kill_priority),
+            (self.stun_weight, total_stun_priority),
+            (self.turn_weight, total_turn_priority),
+            (self.rank_weight, total_rank_priority),
+            (self.health_weight, total_health_priority)
+        ]
+        
+        sorted_priorites = sorted(total_priorities, key = lambda x: x[0], reverse = True)
+        result = tuple(x[1] for x in sorted_priorites)
+        return result
 
     def CalculatePriority(self, can_kill, can_stun, enemy):
-        kill_priority = 1 if can_kill else 0
-        # Using a stun action while killing the enemy at the same time makes the stun have no value!    
-        stun_priority = 1 if can_stun and not enemy.is_stunned and not can_kill else 0
-        turn_priority = 1 if not enemy.has_taken_action else 0
-        rank_priority = -enemy.position
-        health_priority = -enemy.health
+        priorities = [
+            (self.kill_weight, -1 if can_kill else 0),
+            # Using a stun action while killing the enemy at the same time makes the stun have no value!   
+            (self.stun_weight, -1 if can_stun and not enemy.is_stunned else 0),
+            (self.turn_weight, -1 if not enemy.has_taken_action else 0),
+            # Inversion is used to ensure Lower position values will have lesser priority.
+            (self.rank_weight, -enemy.position),
+            # Prioritise lower health enemies.
+            (self.health_weight, -enemy.health)
+        ]
         
-        return (-kill_priority, -stun_priority, -turn_priority, rank_priority, health_priority)
+        print(f"Evaluated {enemy.__class__.__name__} at position {enemy.position}: Priority = {priorities}")
+        # Sort the priorities based on the weight. First Element is the highest priority
+        sorted_priorites = sorted(priorities, key = lambda x: x[0], reverse = True)
+        # Making sure to return the sorted prioties as tuples.
+        result = tuple(x[1] for x in sorted_priorites)
+        return result
 
     def EvaluateTarget(self, action_value, enemy):
         average_damage = ((action_value.damage_range[0] + action_value.damage_range[1]) / 2) * (1 - enemy.protection)

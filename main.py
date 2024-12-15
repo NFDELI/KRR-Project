@@ -188,15 +188,18 @@ def MyTest():
     Paracelsus = PlagueDoctor(position = 3) # Change this back to 3 later!
     Junia = Vestal(position = 4)
     
-    Reynald.policies.turn_weight = 0.6
-    Reynald.policies.stun_weight = 0.7
-    Reynald.policies.kill_weight = 0.9
-    Reynald.policies.rank_weight = 1
-    Reynald.policies.health_weight = 0.1
+    Reynald.policies.turn_weight = 0
+    Reynald.policies.stun_weight = 8
+    Reynald.policies.kill_weight = 10
+    Reynald.policies.rank_weight = 7
+    Reynald.policies.health_weight = 6
     
     # Enemies
     Mald = Cutthroat(position = 1)
+    Mald.health = 11
     Axel = Fusilier(position = 2)
+    Axel.health = 11
+    Axel.has_taken_action = True
     Carlos = Cutthroat(position = 3)
     Miguel = Fusilier(position = 4)
     
@@ -238,16 +241,14 @@ def MyTest():
     character_decision, character_target, target_grid = grid.herogrid_dict[1].GetAction(grid)
     grid.herogrid_dict[1].DoAction(character_decision, target_grid[character_target.position], target_grid, policy_evaluator)
     
-    character_decision, character_target, target_grid = grid.herogrid_dict[1].GetAction(grid)
-    grid.herogrid_dict[1].DoAction(character_decision, target_grid[character_target.position], target_grid, policy_evaluator)
+    # character_decision, character_target, target_grid = grid.herogrid_dict[1].GetAction(grid)
+    # grid.herogrid_dict[1].DoAction(character_decision, target_grid[character_target.position], target_grid, policy_evaluator)
     
-    character_decision, character_target, target_grid = grid.herogrid_dict[1].GetAction(grid)
-    grid.herogrid_dict[1].DoAction(character_decision, target_grid[character_target.position], target_grid, policy_evaluator)
+    # character_decision, character_target, target_grid = grid.herogrid_dict[1].GetAction(grid)
+    # grid.herogrid_dict[1].DoAction(character_decision, target_grid[character_target.position], target_grid, policy_evaluator)
     
-    character_decision, character_target, target_grid = grid.herogrid_dict[1].GetAction(grid)
-    grid.herogrid_dict[1].DoAction(character_decision, target_grid[character_target.position], target_grid, policy_evaluator)
-    
-    grid.enemygrid_dict[1].GetAction(grid)
+    # character_decision, character_target, target_grid = grid.herogrid_dict[1].GetAction(grid)
+    # grid.herogrid_dict[1].DoAction(character_decision, target_grid[character_target.position], target_grid, policy_evaluator)
     print("=================================================================================")
     # print("=================================================================================")
     # print("ROUND 2\n")
