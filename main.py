@@ -209,11 +209,16 @@ def MyTest():
     Reynald.policies.rank_weight = 7
     Reynald.policies.health_weight = 6
     
+    Reynald.health = 5
+    Dismas.health = 5
+    Paracelsus.health = 5
+    Junia.health = 5
+    
     # Enemies
     Mald = Cutthroat(position = 1)
     Mald.health = 11
     Axel = Fusilier(position = 2)
-    Axel.health = 11
+    Axel.health = 1
     Axel.has_taken_action = True
     Carlos = Cutthroat(position = 3)
     Miguel = Fusilier(position = 4)
@@ -224,8 +229,8 @@ def MyTest():
     herogrid_dict = {
         Reynald.position : Reynald,
         Dismas.position : Dismas,
-        # Paracelsus.position : Paracelsus,
-        # Junia.position : Junia
+        Paracelsus.position : Paracelsus,
+        Junia.position : Junia
     }
     
     enemygrid_dict = {
@@ -253,8 +258,8 @@ def MyTest():
     
     print("ROUND 1")
     print("=================================================================================")
-    character_decision, character_target, target_grid = grid.herogrid_dict[2].GetAction(grid)
-    grid.herogrid_dict[2].DoAction(character_decision, target_grid[character_target.position], target_grid, policy_evaluator)
+    character_decision, character_target, target_grid = grid.herogrid_dict[4].GetAction(grid)
+    grid.herogrid_dict[4].DoAction(character_decision, target_grid[character_target.position], target_grid, policy_evaluator)
     print(policy_evaluator.actions_log)
     
     # character_decision, character_target, target_grid = grid.herogrid_dict[1].GetAction(grid)

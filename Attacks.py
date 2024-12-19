@@ -38,26 +38,24 @@ class Attacks(Actions):
                 
                 # Applying Damage to Character.
                 actual_damage = int(damage_done[0] * (1 - target.protection))
-                target.TakeDamage(actual_damage, policy_evaluator)
+                is_death_blow = target.TakeDamage(actual_damage, policy_evaluator)
                 target.TakeStressDamage(self.stress_damage) 
                 print(f"{caster.__class__.__name__} [{caster.position}] Damage Rolled: {damage_done[0]} {'(Critical Hit)' if damage_done[1] else ''} - and {target.__class__.__name__} [{target.position}] has {target.health} health remaining.")
                 print(f"{caster.__class__.__name__}'s actual Damage is: {actual_damage}")
                 #print(f"{target.__class__.__name__} has {target.stress} Stress!")
-                
+            
+                total_dot_value = 0
                 # Applying Status Efects to Character.
-                self.ApplyStatusEffects(caster, target, hit_rng_result, policy_evaluator)
+                if self.apply_status_effects:
+                    total_dot_value = self.ApplyStatusEffects(caster, target, hit_rng_result, policy_evaluator)
                 
                 if not self.is_unlimited:
                     self.limited_use -= 1
                 
+                return (actual_damage, hit_rng_result, total_dot_value, is_death_blow)
             else:
                 print("ATTACK MISSED!")
-                
-            if actual_damage:
-                return actual_damage
-            else:
-                return -1
-            
+                return (0, hit_rng_result, 0, False)
 
     def RngDamage(self, target):
         
@@ -114,8 +112,10 @@ class Attacks(Actions):
                 if(isBleedSuccess):
                     chosen_target.status_effects.append(StatusEffects(effect.name, effect.duration, effect.apply_chance, effect.effect_value, effect.effect_type))
                     print(f"Bleed SUCCESS on {chosen_target.__class__.__name__}")
+                    return effect.duration * effect.effect_value
                 else:
                     print(f"Bleed FAILED on {chosen_target.__class__.__name__}")
+                    return 0
             
             # Blight Apply RNG
             if(effect.name == "Blight"):
@@ -125,8 +125,10 @@ class Attacks(Actions):
                     #chosen_target.status_effects.append(effect)
                     chosen_target.status_effects.append(StatusEffects(effect.name, effect.duration, effect.apply_chance, effect.effect_value, effect.effect_type))
                     print(f"Blight SUCCESS on {chosen_target.__class__.__name__}")
+                    return effect.duration * effect.effect_value
                 else:
                     print(f"Blight FAILED on {chosen_target.__class__.__name__}")
+                    return 0
             
             # Apply Slow Speed
             if(effect.name == "Reduce_Speed"):
@@ -190,6 +192,9 @@ class Attacks(Actions):
                     for i in range(0, effect.effect_value):
                         caster.Move(-1)                        
                 print(f"{caster.__class__.__name__} knockbacked to position {caster.position}!")
+            
+            # This return value is the total_dot_value for the ActionLog Dataframe.
+            return 0
 
             
         

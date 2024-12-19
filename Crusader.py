@@ -27,7 +27,7 @@ class Crusader(Character):
         
         self.actions_dict['smite'] = smite
         self.actions_dict['stunning_blow'] = stunning_blow
-        #self.actions_dict['zealous_accusation'] = zealous_accusation
+        self.actions_dict['zealous_accusation'] = zealous_accusation
         #self.actions_dict['bulwark_of_faith'] = bulwark_of_faith
         #self.actions_dict['inspiring_cry'] = inspiring_cry
         

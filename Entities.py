@@ -157,7 +157,8 @@ class Character:
         self.health = self.health - damage
         if(self.health < 0):
             self.health = 0
-        self.CheckCharacterHealth(policy_evaluator)
+        is_chara_dead = self.CheckCharacterHealth(policy_evaluator)
+        return is_chara_dead
         
     def TakeStressDamage(self, stress_damage):
         self.stress = self.stress + stress_damage
@@ -178,10 +179,13 @@ class Character:
                     if isDeathSuccess:
                         policy_evaluator.UpdateHeroDied()
                         self.CharacterDies()
+                        return True
                     else:
                         print(f"{self.__class__.__name__} SURVIVED DEATH BLOW")
+                        return False
             else:
                 self.CharacterDies()
+                return True
         else:
             if(self.is_player):
                 self.is_at_death_door = False

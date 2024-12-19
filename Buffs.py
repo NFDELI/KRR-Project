@@ -18,15 +18,18 @@ class Buffs(Actions):
         def DoAction(self, caster, chosen_target, policy_evaluator):
             if self.is_unlimited or self.limited_use > 0:
                 # Applying Buffs/Debuffs on Target
-                self.ApplyStatusEffects(chosen_target, policy_evaluator)
+                result = self.ApplyStatusEffects(chosen_target, policy_evaluator)
                 
                 if not self.is_unlimited:
                     self.limited_use -= 1
+                return result
             
             else:
                 print("Buff cannot be used again!")
 
         def ApplyStatusEffects(self, chosen_target, policy_evaluator):
+            actual_heal_value = 0
+            actual_cure_value = 0
             for effect in self.apply_status_effects:
                 # Buff RNG    
                 buff_chance = effect.apply_chance - chosen_target.debuff_res
@@ -48,6 +51,7 @@ class Buffs(Actions):
                                 policy_evaluator.UpdateHeroHeal(effect.effect_value * effect.duration)
                                 effect.duration = 0
                                 chosen_target.ReduceStatusEffectsDuration(effect)
+                                actual_cure_value += effect.effect_value * effect.duration
                     
                     if(effect.name == "Heal"):
                         old_health = chosen_target.health
@@ -55,6 +59,7 @@ class Buffs(Actions):
                         heal_rng = random.randint(effect.effect_value[0], effect.effect_value[1])
                         chosen_target.HealDamage(heal_rng, policy_evaluator)
                         print(f"{chosen_target.__class__.__name__} healed for {heal_rng} hp! -  {chosen_target.__class__.__name__}'s health: {old_health} -> {chosen_target.health}")
+                        actual_heal_value = chosen_target.max_health - chosen_target.health if chosen_target.health + heal_rng >= chosen_target.max_health else heal_rng                      
                         
                     if(effect.name == "Stress_Heal"):
                         # Stress Heal has a range value too!
@@ -64,3 +69,6 @@ class Buffs(Actions):
                 else:
                     # Do nothing
                     pass
+            
+            # This return value is used for the Character Action Log.
+            return (actual_heal_value, True, actual_cure_value, chosen_target.is_at_death_door)
