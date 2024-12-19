@@ -239,13 +239,20 @@ class Character:
         # Check if action is Multi Target.
         print(f"{self.__class__.__name__} used action: {action_name_str}! \n")
         if(chosen_action.is_multi_target):
+            targets_data = []
+            results_data = []
             for targets in chosen_action.target_position:
                 # Check if Key is valid
                 if targets in grid_target:
-                    chosen_action.DoAction(self, grid_target[targets], policy_evaluator)
+                    result = chosen_action.DoAction(self, grid_target[targets], policy_evaluator)
+                    targets_data.append(grid_target[targets])
+                    results_data.append(result)
                     #print(f"{self.__class__.__name__} used action: {action_name_str}! \n")
+                    
+            policy_evaluator.UpdateCharacterActionLog(self, targets_data, action_name_str, results_data)
         else:
             result = chosen_action.DoAction(self, chosen_target, policy_evaluator)
+            policy_evaluator.UpdateCharacterActionLog(self, [chosen_target], action_name_str, [result])
             #print(f"{self.__class__.__name__} used action: {action_name_str}! \n")    
     
     def CharacterDies(self):

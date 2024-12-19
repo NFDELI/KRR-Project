@@ -26,11 +26,21 @@ class PolicyEvaluator:
         self.total_hero_entered_death_door = 0
         self.total_hero_died = 0
         self.fight_end_score = 0
-        self.actions_log = {}
+        self.actions_log = []
     
-    def UpdateCharacterActionLog(self, character, action, value = -1, is_miss = False, target = None):
+    def UpdateCharacterActionLog(self, character, target, action_name, value):
         # Format of Log array:
-        self.actions_log[character.__class__.__name__] += [action, character.position, value, is_miss, target]
+        target_data = []
+        value_data = []
+        for _ in target:
+            target_data.append((_.__class__.__name__, _.position))
+        
+        for _ in value:
+            value_data.append(_)
+        
+        caster_data = (character.__class__.__name__, character.position)
+        
+        self.actions_log.append([caster_data, target_data, action_name, value_data])
     
     def UpdateHeroDamage(self, damage):
         self.total_hero_damage += damage
@@ -213,7 +223,7 @@ def MyTest():
     
     herogrid_dict = {
         Reynald.position : Reynald,
-        # Dismas.position : Dismas,
+        Dismas.position : Dismas,
         # Paracelsus.position : Paracelsus,
         # Junia.position : Junia
     }
@@ -243,8 +253,9 @@ def MyTest():
     
     print("ROUND 1")
     print("=================================================================================")
-    character_decision, character_target, target_grid = grid.herogrid_dict[1].GetAction(grid)
-    grid.herogrid_dict[1].DoAction(character_decision, target_grid[character_target.position], target_grid, policy_evaluator)
+    character_decision, character_target, target_grid = grid.herogrid_dict[2].GetAction(grid)
+    grid.herogrid_dict[2].DoAction(character_decision, target_grid[character_target.position], target_grid, policy_evaluator)
+    print(policy_evaluator.actions_log)
     
     # character_decision, character_target, target_grid = grid.herogrid_dict[1].GetAction(grid)
     # grid.herogrid_dict[1].DoAction(character_decision, target_grid[character_target.position], target_grid, policy_evaluator)
@@ -281,7 +292,7 @@ def MyTest():
     # Other = Effect()
     # print(Other.health)
      
-main()
+MyTest()
 
 
 # TODO:

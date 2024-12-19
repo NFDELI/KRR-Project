@@ -50,12 +50,13 @@ class Attacks(Actions):
                 if not self.is_unlimited:
                     self.limited_use -= 1
                 
-                # Log format: hit_result (bool), actualdamage, isCrit?, target being attacked.
-                
             else:
                 print("ATTACK MISSED!")
                 
-            return [hit_rng_result, actual_damage, damage_done[1], target]
+            if actual_damage:
+                return actual_damage
+            else:
+                return -1
             
 
     def RngDamage(self, target):
