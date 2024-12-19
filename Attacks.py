@@ -49,10 +49,15 @@ class Attacks(Actions):
                 
                 if not self.is_unlimited:
                     self.limited_use -= 1
-            
+                
+                # Log format: hit_result (bool), actualdamage, isCrit?, target being attacked.
+                
             else:
                 print("ATTACK MISSED!")
-    
+                
+            return [hit_rng_result, actual_damage, damage_done[1], target]
+            
+
     def RngDamage(self, target):
         
         # Check if attack will crit

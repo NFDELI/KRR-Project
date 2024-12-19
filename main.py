@@ -26,6 +26,11 @@ class PolicyEvaluator:
         self.total_hero_entered_death_door = 0
         self.total_hero_died = 0
         self.fight_end_score = 0
+        self.actions_log = {}
+    
+    def UpdateCharacterActionLog(self, character, action, value = -1, is_miss = False, target = None):
+        # Format of Log array:
+        self.actions_log[character.__class__.__name__] += [action, character.position, value, is_miss, target]
     
     def UpdateHeroDamage(self, damage):
         self.total_hero_damage += damage

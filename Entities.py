@@ -220,7 +220,7 @@ class Character:
             self.health = self.max_health
     
     def DoAction(self, action_name, chosen_target, grid_target, policy_evaluator):
-        # REMOVE THIS AFTER TESTING
+        
         if not self.StartTurn(policy_evaluator):
             return False
 
@@ -245,7 +245,7 @@ class Character:
                     chosen_action.DoAction(self, grid_target[targets], policy_evaluator)
                     #print(f"{self.__class__.__name__} used action: {action_name_str}! \n")
         else:
-            chosen_action.DoAction(self, chosen_target, policy_evaluator)
+            result = chosen_action.DoAction(self, chosen_target, policy_evaluator)
             #print(f"{self.__class__.__name__} used action: {action_name_str}! \n")    
     
     def CharacterDies(self):
