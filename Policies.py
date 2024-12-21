@@ -242,27 +242,31 @@ class Policies:
         total_turn_priority = 0
         total_rank_priority = 0
         total_health_priority = 0
+        sum_priority = (0, 0, 0, 0, 0)
         
         for enemy in valid_targets:
             can_kill, can_stun, average_damage, total_damage = self.EvaluateTarget(action_value, enemy)
-            
-            total_kill_priority += -1 if can_kill else 0
-            total_stun_priority += -1 if can_stun and not can_kill else 0
-            total_turn_priority += -1 if not enemy.has_taken_action else 0
-            total_rank_priority += -enemy.position
-            total_health_priority += -enemy.health
+            priority = self.CalculatePriority(can_kill, can_stun, enemy)
+            sum_priority += priority
+            # total_kill_priority += -1 if can_kill else 0
+            # total_stun_priority += -1 if can_stun and not can_kill else 0
+            # total_turn_priority += -1 if not enemy.has_taken_action else 0
+            # total_rank_priority += -enemy.position
+            # total_health_priority += -enemy.health
+
         
-        total_priorities = [
-            (self.kill_weight, total_kill_priority),
-            (self.stun_weight, total_stun_priority),
-            (self.turn_weight, total_turn_priority),
-            (self.rank_weight, total_rank_priority),
-            (self.health_weight, total_health_priority)
-        ]
+        # total_priorities = [
+        #     (self.kill_weight, total_kill_priority),
+        #     (self.stun_weight, total_stun_priority),
+        #     (self.turn_weight, total_turn_priority),
+        #     (self.rank_weight, total_rank_priority),
+        #     (self.health_weight, total_health_priority)
+        # ]
         
-        sorted_priorites = sorted(total_priorities, key = lambda x: x[0], reverse = True)
-        result = tuple(x[1] for x in sorted_priorites)
-        return result
+        # sorted_priorites = sorted(total_priorities, key = lambda x: x[0], reverse = True)
+        # result = tuple(x[1] for x in sorted_priorites)
+        return sum_priority
+        #return result
 
     def CalculatePriority(self, can_kill, can_stun, enemy):
         priorities = [
