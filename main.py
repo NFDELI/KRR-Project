@@ -11,6 +11,7 @@ from BoneCourtier import BoneCourtier
 import random
 from collections import deque
 from Entities import Corpse
+import pandas as pd
 
 class Grid():
     def __init__(self, herogrid, enemygrid):
@@ -32,15 +33,17 @@ class PolicyEvaluator:
         # Format of Log array:
         target_data = []
         value_data = []
+        print(f"HEREEEE ACTION NAME IS::: {action_name}")
         for _ in target:
             target_data.append((_.__class__.__name__, _.position))
         
         for _ in value:
             value_data.append(_)
         
-        caster_data = (character.__class__.__name__, character.position)
+        caster_name = character.__class__.__name__
+        caster_position = character.position
         
-        self.actions_log.append([caster_data, target_data, action_name, value_data])
+        self.actions_log.append([caster_name, caster_position, target_data, action_name, value_data])
     
     def UpdateHeroDamage(self, damage):
         self.total_hero_damage += damage
@@ -106,6 +109,36 @@ def GenerateNextRound(herogrid_dict, enemygrid_dict, grid):
     
     initiative_queue = deque(sorted(initiative_queue, key=lambda Character: Character.initiative, reverse=True))
     return initiative_queue
+
+def CreateDataFrame(data):
+    # Prepare a list of rows.
+    rows = []
+    for entry in data:
+        caster_name = entry[0]
+        caster_position = entry[1]
+        targets = entry[2]
+        action = entry[3]
+        results = entry[4]
+
+        # Expand the data for each target
+        for target, result in zip(targets, results):
+            rows.append({
+                'Caster': caster_name,
+                'Caster Rank': caster_position,
+                'Target': target[0],
+                'Target Rank': target[1],
+                'Action': action,
+                'Damage': result[0],
+                'Hit Success': result[1],
+                'Total DOT Value': result[2],
+                'Death Blow/Prevent': result[3]  
+            })
+
+    # Create DataFrame
+    df = pd.DataFrame(rows)
+
+    # Display the DataFrame
+    print(df)
 
 def main():
     
@@ -204,22 +237,14 @@ def MyTest():
     Junia = Vestal(position = 4)
     
     Reynald.policies.turn_weight = 0
-    Reynald.policies.stun_weight = 8
-    Reynald.policies.kill_weight = 10
-    Reynald.policies.rank_weight = 7
-    Reynald.policies.health_weight = 6
-    
-    Reynald.health = 5
-    Dismas.health = 5
-    Paracelsus.health = 5
-    Junia.health = 5
+    Reynald.policies.stun_weight = 10
+    Reynald.policies.kill_weight = 0
+    Reynald.policies.rank_weight = 0
+    Reynald.policies.health_weight = 0
     
     # Enemies
     Mald = Cutthroat(position = 1)
-    Mald.health = 11
     Axel = Fusilier(position = 2)
-    Axel.health = 1
-    Axel.has_taken_action = True
     Carlos = Cutthroat(position = 3)
     Miguel = Fusilier(position = 4)
     
@@ -258,8 +283,8 @@ def MyTest():
     
     print("ROUND 1")
     print("=================================================================================")
-    character_decision, character_target, target_grid = grid.herogrid_dict[4].GetAction(grid)
-    grid.herogrid_dict[4].DoAction(character_decision, target_grid[character_target.position], target_grid, policy_evaluator)
+    character_decision, character_target, target_grid = grid.herogrid_dict[1].GetAction(grid)
+    grid.herogrid_dict[1].DoAction(character_decision, target_grid[character_target.position], target_grid, policy_evaluator)
     print(policy_evaluator.actions_log)
     
     # character_decision, character_target, target_grid = grid.herogrid_dict[1].GetAction(grid)
@@ -296,6 +321,7 @@ def MyTest():
     # Effect = lambda : Crusader(position = 1)
     # Other = Effect()
     # print(Other.health)
+    CreateDataFrame(policy_evaluator.actions_log)
      
 MyTest()
 
