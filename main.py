@@ -237,8 +237,8 @@ def MyTest():
     Junia = Vestal(position = 4)
     
     Reynald.policies.turn_weight = 0
-    Reynald.policies.stun_weight = 8
-    Reynald.policies.kill_weight = 10
+    Reynald.policies.stun_weight = 10
+    Reynald.policies.kill_weight = 0
     Reynald.policies.rank_weight = 0
     Reynald.policies.health_weight = 9
     

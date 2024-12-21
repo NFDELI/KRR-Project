@@ -17,7 +17,7 @@ class Attacks(Actions):
         self.is_multi_target = is_multi_target
         self.is_buff = False
         self.is_target_friendly = is_traget_friendly
-        self.is_stun = False
+        self.is_stun = is_stun
         self.is_heal = False
         self.name = name
         

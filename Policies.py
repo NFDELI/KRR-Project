@@ -237,36 +237,15 @@ class Policies:
         return dot_damage
 
     def CalculateMultiTargetPriority(self, action_value, valid_targets):
-        total_kill_priority = 0
-        total_stun_priority = 0
-        total_turn_priority = 0
-        total_rank_priority = 0
-        total_health_priority = 0
-        sum_priority = (0, 0, 0, 0, 0)
-        
+        total_priorities = (0, 0, 0, 0, 0) 
+    
         for enemy in valid_targets:
             can_kill, can_stun, average_damage, total_damage = self.EvaluateTarget(action_value, enemy)
             priority = self.CalculatePriority(can_kill, can_stun, enemy)
-            sum_priority += priority
-            # total_kill_priority += -1 if can_kill else 0
-            # total_stun_priority += -1 if can_stun and not can_kill else 0
-            # total_turn_priority += -1 if not enemy.has_taken_action else 0
-            # total_rank_priority += -enemy.position
-            # total_health_priority += -enemy.health
-
+            total_priorities = tuple(a + b for a, b in zip(total_priorities, priority))
+            print(f"{total_priorities}\n")
         
-        # total_priorities = [
-        #     (self.kill_weight, total_kill_priority),
-        #     (self.stun_weight, total_stun_priority),
-        #     (self.turn_weight, total_turn_priority),
-        #     (self.rank_weight, total_rank_priority),
-        #     (self.health_weight, total_health_priority)
-        # ]
-        
-        # sorted_priorites = sorted(total_priorities, key = lambda x: x[0], reverse = True)
-        # result = tuple(x[1] for x in sorted_priorites)
-        return sum_priority
-        #return result
+        return total_priorities
 
     def CalculatePriority(self, can_kill, can_stun, enemy):
         priorities = [
@@ -296,8 +275,8 @@ class Policies:
         can_kill_direct = average_damage >= enemy.health
         can_kill_with_dot = total_damage >= enemy.health and not enemy.has_taken_action
         can_kill = can_kill_direct or can_kill_with_dot
-        can_stun = action_value.is_stun and not enemy.is_stunned
-        
+        can_stun = action_value.is_stun  # and not enemy.is_stunned
+        print(f"SECOND HEREE: {action_value.is_stun}")
         return (can_kill, can_stun, average_damage, total_damage)
     
     def RandomTargetPolicy(self, every_grid):
