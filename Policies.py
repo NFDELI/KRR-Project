@@ -15,14 +15,14 @@ class Policies:
         self.heal_weight = heal_weight
     
     def SetPolicyWeights(self, kill = 0, stun = 0, turn = 0, rank = 0, health = 0, death = 0, heal = 0, damage = 0):
-        self.kill_weight = kill #
-        self.stun_weight = stun #
-        self.turn_weight = turn #
-        self.rank_weight = rank #
-        self.health_weight = health #
+        self.kill_weight = kill 
+        self.stun_weight = stun 
+        self.turn_weight = turn 
+        self.rank_weight = rank 
+        self.health_weight = health 
         self.damage_weight = damage
-        self.death_door_weight = death #
-        self.heal_weight = heal #
+        self.death_door_weight = death 
+        self.heal_weight = heal 
     
     def BestActionPolicy(self, teamates, enemies):
         # Priority queue for actions.

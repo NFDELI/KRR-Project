@@ -2,7 +2,6 @@ from Entities import Character
 from Attacks import Attacks
 from StatusEffects import StatusEffects
 from Buffs import Buffs
-import random
 
 class Crusader(Character):
     

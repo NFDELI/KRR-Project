@@ -20,7 +20,7 @@ class PlagueDoctor(Character):
         
         # Blinding Gas does no damage!
         blinding_gas_stun = StatusEffects("Stun", 1, 1.0, 1, "stun")
-        blinding_gas = Attacks((3, 4), (3, 4), [lambda: StatusEffects("Stun", 1, 1.0, 1, "stun")], 95, (0, 0), 0, is_multi_target = True, name = "Blinding_Grenade")
+        blinding_gas = Attacks((3, 4), (3, 4), [lambda: StatusEffects("Stun", 1, 1.0, 1, "stun")], 95, (0, 0), 0, is_multi_target = True, is_stun = True, name = "Blinding_Grenade")
         
         battlefield_medicine_cure = StatusEffects("Cure", 0, 999, 999, "cure")
         battlefield_medicine_heal = StatusEffects("Heal", 0, 999, (1, 1), "heal")

@@ -137,8 +137,8 @@ def LoadBestStrategy(Crusader, HighwayMan, PlagueDoctor, Vestal):
 def LoadHealthFocusStrategy(Crusader, HighwayMan, PlagueDoctor, Vestal):
     Crusader.policies.SetPolicyWeights(stun = 10, turn = 9, health = 8, kill = 6)
     HighwayMan.policies.SetPolicyWeights(kill = 10, turn = 9, rank = 8, health = 7)
-    PlagueDoctor.policies.SetPolicyWeights(death = 11, turn = 8, stun = 7, kill = 6)
-    Vestal.policies.SetPolicyWeights(stun = 10, turn = 9, heal = 8)
+    PlagueDoctor.policies.SetPolicyWeights(death = 11, heal = 10, turn = 8, rank = 7, kill = 6, stun = 5)
+    Vestal.policies.SetPolicyWeights(death = 11, heal = 10, turn = 9, kill = 7, stun = 6)
     
 def CreateDataFrame(data):
     # Prepare a list of rows.
@@ -281,16 +281,9 @@ def MyTest():
     Paracelsus = PlagueDoctor(position = 3) # Change this back to 3 later!
     Junia = Vestal(position = 4)
     
-    Reynald.policies.turn_weight = 0
-    Reynald.policies.stun_weight = 0
-    Reynald.policies.kill_weight = 0
-    Reynald.policies.rank_weight = 0
-    Reynald.policies.health_weight = 10
-    
     Junia.policies.SetPolicyWeights(death = 11, stun = 10, turn = 9, rank = 8, heal = 7, kill = 6, health = 5)
-    # Reynald.health = 5
-    # Dismas.health = 15
-    # Paracelsus.health = 2
+    Paracelsus.policies.SetPolicyWeights(death = 11, turn = 8, stun = 7, kill = 6)
+    Reynald.policies.SetPolicyWeights(stun = 10, turn = 9, health = 8, kill = 6)
     
     # Enemies
     Mald = Cutthroat(position = 1)
@@ -333,8 +326,8 @@ def MyTest():
     
     print("ROUND 1")
     print("=================================================================================")
-    character_decision, character_target, target_grid = grid.herogrid_dict[4].GetAction(grid)
-    grid.herogrid_dict[4].DoAction(character_decision, target_grid[character_target.position], target_grid, policy_evaluator)
+    character_decision, character_target, target_grid = grid.herogrid_dict[1].GetAction(grid)
+    grid.herogrid_dict[1].DoAction(character_decision, target_grid[character_target.position], target_grid, policy_evaluator)
     print(policy_evaluator.actions_log)
     
     # character_decision, character_target, target_grid = grid.herogrid_dict[1].GetAction(grid)
@@ -372,8 +365,8 @@ def MyTest():
     # Other = Effect()
     # print(Other.health)
     CreateDataFrame(policy_evaluator.actions_log)
-     
-MyTest()
+
+main()
 
 
 # TODO:
