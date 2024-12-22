@@ -121,7 +121,25 @@ def GenerateNextRound(herogrid_dict, enemygrid_dict, grid):
     
     initiative_queue = deque(sorted(initiative_queue, key=lambda Character: Character.initiative, reverse=True))
     return initiative_queue
-
+def LoadBestStrategy(Crusader, HighwayMan, PlagueDoctor, Vestal):
+    # Crusader has high single target damage and has a stun. (Mainly targets Front Ranks and Crusader is a Tank)
+    # HighwayMan has good damage and can target multiple enemies. (Can Target Back Ranks)
+    # PlagueDoctor can Deal a lot of Damage Over Time, stun, cure (heal DOTs) and attack the back ranks of enemies.
+    # Vestal can Heal, Stun, and Damage single targets at the back ranks
+    
+    # Function format: SetPolicyWeights(self, kill = 0, stun = 0, turn = 0, rank = 0, health = 0, death = 0, heal = 0):
+    
+    Crusader.policies.SetPolicyWeights(kill = 10, turn = 9, stun = 8, health = 7)
+    HighwayMan.policies.SetPolicyWeights(kill = 10, turn = 9, rank = 8, health = 7)
+    PlagueDoctor.policies.SetPolicyWeights(death = 11, kill = 10, turn = 9, rank = 8, heal = 6, health = 5)
+    Vestal.policies.SetPolicyWeights(death = 11, stun = 10, turn = 9, rank = 8, heal = 7, health = 6, kill = 5)
+    
+def LoadHealthFocusStrategy(Crusader, HighwayMan, PlagueDoctor, Vestal):
+    Crusader.policies.SetPolicyWeights(stun = 10, turn = 9, health = 8, kill = 6)
+    HighwayMan.policies.SetPolicyWeights(kill = 10, turn = 9, rank = 8, health = 7)
+    PlagueDoctor.policies.SetPolicyWeights(death = 11, turn = 8, stun = 7, kill = 6)
+    Vestal.policies.SetPolicyWeights(stun = 10, turn = 9, heal = 8)
+    
 def CreateDataFrame(data):
     # Prepare a list of rows.
     rows = []
@@ -176,6 +194,9 @@ def main():
     Carlos = Cutthroat(position = 3)
     Miguel = Fusilier(position = 4)
     
+    #LoadBestStrategy(Reynald, Dismas, Paracelsus, Junia)
+    LoadHealthFocusStrategy(Reynald, Dismas, Paracelsus, Junia)
+    
     #TEST STRESS SKELETONS
     Quary = BoneCourtier(position = 3)
     
@@ -208,7 +229,7 @@ def main():
         enemy.team_grid = grid.enemygrid_dict
         enemy.enemy_grid = grid.herogrid_dict
         
-    while(grid.herogrid_dict and (not all_values_of_class(grid.enemygrid_dict, Corpse) and grid.round_counter < 20)):
+    while(grid.herogrid_dict and (not all_values_of_class(grid.enemygrid_dict, Corpse) and grid.round_counter < 50)):
         
         print(f"==========Hero Team=============")
         for key, value in grid.herogrid_dict.items():
@@ -266,10 +287,10 @@ def MyTest():
     Reynald.policies.rank_weight = 0
     Reynald.policies.health_weight = 10
     
-    Junia.policies.SetPolicyWeights(heal = 20)
-    Reynald.health = 5
-    Dismas.health = 15
-    Paracelsus.health = 2
+    Junia.policies.SetPolicyWeights(death = 11, stun = 10, turn = 9, rank = 8, heal = 7, kill = 6, health = 5)
+    # Reynald.health = 5
+    # Dismas.health = 15
+    # Paracelsus.health = 2
     
     # Enemies
     Mald = Cutthroat(position = 1)
@@ -352,7 +373,7 @@ def MyTest():
     # print(Other.health)
     CreateDataFrame(policy_evaluator.actions_log)
      
-main()
+MyTest()
 
 
 # TODO:

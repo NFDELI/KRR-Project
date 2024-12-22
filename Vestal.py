@@ -14,7 +14,7 @@ class Vestal(Character):
         super().__init__(True, +0, 0.01, (4, 8), 0, 0.00, 4, 24, position, actions_dict, 0.30, 0.40, 0.30, 0.30, 0.30, 0.67)
         
         dazling_light_stun = StatusEffects("Stun", 1, 1.0, 1, "stun")
-        dazling_light = Attacks((1, 2 ,3), (1, 2, 3), [lambda: StatusEffects("Stun", 1, 1.0, 1, "stun")], 90, (self.damage_base[0] * 0.25, self.damage_base[1] * 0.25), +0.05, is_unlimited = True, is_multi_target = False, is_stun = True, name = "Dazling_Light")
+        dazling_light = Attacks((2, 3, 4), (1, 2, 3), [dazling_light_stun], 90, (self.damage_base[0] * 0.25, self.damage_base[1] * 0.25), +0.05, is_unlimited = True, is_multi_target = False, is_stun = True, name = "Dazling_Light")
         
         judgement_heal = StatusEffects("Self_Heal", 0, 3.0, 3, "self_heal")
         judgement = Attacks((3, 4), (1, 2, 3, 4), [judgement_heal], 85, (int(self.damage_base[0] * 0.75), int(self.damage_base[1] * 0.75)), +0.05, is_unlimited = True, name = "Judgement")
@@ -27,10 +27,10 @@ class Vestal(Character):
         
         mace_bash = Attacks((1, 2), (1, 2), [], 85, self.damage_base, 0, True, False, name = "Mace_Bash")
         
-        self.actions_dict['judgement'] = judgement
         self.actions_dict['dazling_light'] = dazling_light
-        self.actions_dict['divine_grace'] = divine_grace
-        self.actions_dict['divine_comfort'] = divine_comfort
+        self.actions_dict['judgement'] = judgement
+        # self.actions_dict['divine_grace'] = divine_grace
+        # self.actions_dict['divine_comfort'] = divine_comfort
         #self.actions_dict['mace_bash'] = mace_bash
         
         # This action is only used for DEBUGGING!

@@ -15,14 +15,14 @@ class Policies:
         self.heal_weight = heal_weight
     
     def SetPolicyWeights(self, kill = 0, stun = 0, turn = 0, rank = 0, health = 0, death = 0, heal = 0, damage = 0):
-        self.kill_weight = kill
-        self.stun_weight = stun
-        self.turn_weight = turn
-        self.rank_weight = rank
-        self.health_weight = health
+        self.kill_weight = kill #
+        self.stun_weight = stun #
+        self.turn_weight = turn #
+        self.rank_weight = rank #
+        self.health_weight = health #
         self.damage_weight = damage
-        self.death_door_weight = death
-        self.heal_weight = heal
+        self.death_door_weight = death #
+        self.heal_weight = heal #
     
     def BestActionPolicy(self, teamates, enemies):
         # Priority queue for actions.
@@ -44,6 +44,7 @@ class Policies:
                 # Damage Action Found
                 # Priority Format: kill/stun_priority = (kill_priority, stun_priority, turn_priority, rank_priority, health_priority)
                 damage_evaluation = self.EvaluateDamageAction(action_value, enemies)
+                print(f"Priority for {action_value.name} is {damage_evaluation}")
                 if damage_evaluation:
                     #print(type(damage_evaluation))
                     heapq.heappush(action_plan_priority, damage_evaluation)
@@ -183,7 +184,11 @@ class Policies:
             total_priorities = [
                 (self.death_door_weight, -total_death_door_priority),
                 (self.heal_weight, -total_effective_heal),
-                (self.health_weight, total_health_priority)
+                (self.health_weight, total_health_priority),
+                (self.kill_weight, 0),
+                (self.stun_weight, 0),
+                (self.turn_weight, 0),
+                (self.rank_weight, 0)
             ]
             
             sorted_total_priorities = sorted(total_priorities, key = lambda x: x[0], reverse = True)
@@ -207,7 +212,11 @@ class Policies:
                 priorities = [
                     (self.death_door_weight, -death_door_priority),
                     (self.heal_weight, -effective_heal),
-                    (self.health_weight, -ally.health)
+                    (self.health_weight, -ally.health),
+                    (self.kill_weight, 0),
+                    (self.stun_weight, 0),
+                    (self.turn_weight, 0),
+                    (self.rank_weight, 0)
                 ]
                 
                 sorted_priorites = sorted(priorities, key = lambda x: x[0], reverse = True)
@@ -247,7 +256,7 @@ class Policies:
         return dot_damage
 
     def CalculateMultiTargetPriority(self, action_value, valid_targets):
-        total_priorities = (0, 0, 0, 0, 0) 
+        total_priorities = (0, 0, 0, 0, 0, 0, 0) 
     
         for enemy in valid_targets:
             can_kill, can_stun, average_damage, total_damage = self.EvaluateTarget(action_value, enemy)
@@ -266,7 +275,9 @@ class Policies:
             # Inversion is used to ensure Lower position values will have lesser priority.
             (self.rank_weight, -enemy.position),
             # Prioritise lower health enemies.
-            (self.health_weight, -enemy.health)
+            (self.health_weight, -enemy.health),
+            (self.heal_weight, 0),
+            (self.death_door_weight, 0)
         ]
         
         # print(f"Evaluated {enemy.__class__.__name__} at position {enemy.position}: Priority = {priorities}")
@@ -285,7 +296,7 @@ class Policies:
         can_kill_direct = average_damage >= enemy.health
         can_kill_with_dot = total_damage >= enemy.health and not enemy.has_taken_action
         can_kill = can_kill_direct or can_kill_with_dot
-        can_stun = action_value.is_stun  # and not enemy.is_stunned
+        can_stun = action_value.is_stun and not enemy.is_stunned
         return (can_kill, can_stun, average_damage, total_damage)
     
     def RandomTargetPolicy(self, every_grid):
