@@ -222,6 +222,10 @@ class Character:
         
         if(self.health > self.max_health):
             self.health = self.max_health
+        
+        # Some heals in Darkest Dungeon generate a 0 heal value.
+        if self.health > 0:
+            self.is_at_death_door = False
     
     def DoAction(self, action_name, chosen_target, grid_target, policy_evaluator):
         

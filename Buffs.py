@@ -49,9 +49,9 @@ class Buffs(Actions):
                         for effect in chosen_target.status_effects[:]:
                             if effect.name in ["Bleed", "Blight"]:
                                 policy_evaluator.UpdateHeroHeal(effect.effect_value * effect.duration)
-                                effect.duration = 0
                                 chosen_target.ReduceStatusEffectsDuration(effect)
                                 actual_cure_value += effect.effect_value * effect.duration
+                                effect.duration = 0
                     
                     if(effect.name == "Heal"):
                         old_health = chosen_target.health
@@ -71,4 +71,6 @@ class Buffs(Actions):
                     pass
             
             # This return value is used for the Character Action Log.
+            print(f"Actual Heal Value is: {actual_heal_value}\n")
+            print(f"Actual Cure Value is: {actual_cure_value}")
             return (actual_heal_value, True, actual_cure_value, chosen_target.is_at_death_door)

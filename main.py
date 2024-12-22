@@ -11,6 +11,7 @@ from BoneCourtier import BoneCourtier
 import random
 from collections import deque
 from Entities import Corpse
+from StatusEffects import StatusEffects
 import pandas as pd
 
 class Grid():
@@ -169,7 +170,7 @@ def CreateDataFrame(data):
             'Action': action,
             'Damage/Heal': damages,
             'Hit Success': hit_successes,
-            'Total DOT Value': total_dot_values,
+            'Total DOT/Cure Value': total_dot_values,
             'Total Damage/Heal': total_damage,
             'Death Blow/Prevent': death_blow_or_avoid  
         })
@@ -282,7 +283,7 @@ def MyTest():
     Junia = Vestal(position = 4)
     
     Junia.policies.SetPolicyWeights(death = 11, stun = 10, turn = 9, rank = 8, heal = 7, kill = 6, health = 5)
-    Paracelsus.policies.SetPolicyWeights(death = 11, turn = 8, stun = 7, kill = 6)
+    Paracelsus.policies.SetPolicyWeights(heal = 11)
     Reynald.policies.SetPolicyWeights(stun = 10, turn = 9, health = 8, kill = 6)
     
     # Enemies
@@ -326,8 +327,8 @@ def MyTest():
     
     print("ROUND 1")
     print("=================================================================================")
-    character_decision, character_target, target_grid = grid.herogrid_dict[1].GetAction(grid)
-    grid.herogrid_dict[1].DoAction(character_decision, target_grid[character_target.position], target_grid, policy_evaluator)
+    character_decision, character_target, target_grid = grid.herogrid_dict[3].GetAction(grid)
+    grid.herogrid_dict[3].DoAction(character_decision, target_grid[character_target.position], target_grid, policy_evaluator)
     print(policy_evaluator.actions_log)
     
     # character_decision, character_target, target_grid = grid.herogrid_dict[1].GetAction(grid)
@@ -366,7 +367,7 @@ def MyTest():
     # print(Other.health)
     CreateDataFrame(policy_evaluator.actions_log)
 
-main()
+MyTest()
 
 
 # TODO:
