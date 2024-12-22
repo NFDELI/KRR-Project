@@ -62,13 +62,20 @@ class PolicyEvaluator:
     def UpdateHeroDied(self):
         self.total_hero_died += 40
     
-    def EvaluateRound(self, hero_grid):
+    def EvaluateRound(self):
         round_score = self.total_hero_damage + self.total_hero_heal - self.total_enemy_damage - self.total_hero_entered_death_door - self.total_hero_died
         self.fight_end_score += round_score
         self.ResetCounters()
         print(f"Round Score: {round_score}")
         return self.fight_end_score
-
+    
+    def EvaluateHealthScore(self, hero_dict):
+        total_max_health = sum(int(max_health) for max_health in hero_dict.values().max_health)
+        total_health = sum(int(health) for health in hero_dict.values().health)
+        percentage_score = (total_health / total_max_health) * 100
+        
+        print(f"Health Score is {total_health}/{total_max_health}: {percentage_score}")
+         
     # This function is called when evaluating the total health that each hero has at the end of the simulation.
     def GetTotalHeroTeamHealth(self, hero_grid):
         total_health = 0
@@ -120,19 +127,29 @@ def CreateDataFrame(data):
         action = entry[3]
         results = entry[4]
 
+        # Consolidate data for multiple targets
+        target_names = [target[0] for target in targets]
+        target_ranks = [target[1] for target in targets]
+        damages = [result[0] for result in results]
+        hit_successes = [result[1] for result in results]
+        total_dot_values = [result[2] for result in results]
+        total_damage = sum(damage + dot for damage, dot in zip(damages, total_dot_values))
+        death_blow_or_avoid = [result[3] for result in results]
+        
         # Expand the data for each target
-        for target, result in zip(targets, results):
-            rows.append({
-                'Caster': caster_name,
-                'Caster Rank': caster_position,
-                'Target': target[0],
-                'Target Rank': target[1],
-                'Action': action,
-                'Damage': result[0],
-                'Hit Success': result[1],
-                'Total DOT Value': result[2],
-                'Death Blow/Prevent': result[3]  
-            })
+        # Note: This dataframe is used for both damaging actions and healing actions, this makes less raw data generated.
+        rows.append({
+            'Caster': caster_name,
+            'Caster Rank': caster_position,
+            'Targets': target_names,
+            'Target Ranks': target_ranks,
+            'Action': action,
+            'Damage/Heal': damages,
+            'Hit Success': hit_successes,
+            'Total DOT Value': total_dot_values,
+            'Total Damage/Heal': total_damage,
+            'Death Blow/Prevent': death_blow_or_avoid  
+        })
 
     # Create DataFrame
     df = pd.DataFrame(rows)
@@ -169,7 +186,6 @@ def main():
         Axel.position : Axel,
         Carlos.position : Carlos,
         Miguel.position : Miguel,
-        #Quary.position: Quary
     }
     
     grid = Grid(herogrid_dict, enemygrid_dict)
@@ -186,9 +202,6 @@ def main():
     for enemy in enemies:
         enemy.team_grid = grid.enemygrid_dict
         enemy.enemy_grid = grid.herogrid_dict
-    
-    # grid.herogrid_dict[1].DoAction("inspiring_cry", grid.herogrid_dict[2], grid.herogrid_dict)
-    # grid.herogrid_dict[1].DoAction("inspiring_cry", grid.herogrid_dict[1], grid.herogrid_dict)
         
     while(grid.herogrid_dict and (not all_values_of_class(grid.enemygrid_dict, Corpse) and grid.round_counter < 20)):
         
@@ -214,20 +227,26 @@ def main():
             
             character_to_act.DoAction(character_decision, target_grid[character_target.position], target_grid, policy_evaluator)
             character_to_act.has_taken_action = True
-            #print(f"{character_to_act.__class__.__name__}'s is_dead Boolean is: {character_to_act.is_dead}")
             print("\n")
         
         print("TURN ORDER FINISHED")
         # Evaluate Each Round's Score
-        policy_evaluator.EvaluateRound(grid.herogrid_dict)
+        policy_evaluator.EvaluateRound()
+        
     
     print("====================================================")
     print(f"Simulation Ended with {grid.round_counter} rounds!")
-    print(f"Total Fight Score {policy_evaluator.EvaluateRound(grid.herogrid_dict)}!")
+    print(f"Total Fight Score {policy_evaluator.EvaluateRound()}!")
     print("====================================================")
-        # Display Turn Order
+    
+    # Show Remaining Hp Left.
     for value in grid.herogrid_dict.values():
-        print(f"{value.__class__.__name__} has {value.health} hp left!")    
+        print(f"{value.__class__.__name__} has {value.health} hp left!")
+    
+    policy_evaluator.EvaluateHealthScore(grid.herogrid_dict)
+    
+    # Display Action Log
+    CreateDataFrame(policy_evaluator.actions_log)    
 
 def MyTest():
     # Heroes
@@ -241,6 +260,11 @@ def MyTest():
     Reynald.policies.kill_weight = 0
     Reynald.policies.rank_weight = 0
     Reynald.policies.health_weight = 10
+    
+    Junia.policies.SetPolicyWeights(heal = 20)
+    Reynald.health = 5
+    Dismas.health = 15
+    Paracelsus.health = 2
     
     # Enemies
     Mald = Cutthroat(position = 1)
@@ -283,8 +307,8 @@ def MyTest():
     
     print("ROUND 1")
     print("=================================================================================")
-    character_decision, character_target, target_grid = grid.herogrid_dict[1].GetAction(grid)
-    grid.herogrid_dict[1].DoAction(character_decision, target_grid[character_target.position], target_grid, policy_evaluator)
+    character_decision, character_target, target_grid = grid.herogrid_dict[4].GetAction(grid)
+    grid.herogrid_dict[4].DoAction(character_decision, target_grid[character_target.position], target_grid, policy_evaluator)
     print(policy_evaluator.actions_log)
     
     # character_decision, character_target, target_grid = grid.herogrid_dict[1].GetAction(grid)
@@ -323,7 +347,7 @@ def MyTest():
     # print(Other.health)
     CreateDataFrame(policy_evaluator.actions_log)
      
-MyTest()
+main()
 
 
 # TODO:

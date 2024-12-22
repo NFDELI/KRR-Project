@@ -28,7 +28,7 @@ class StatusEffects:
         # z = text from the spreadsheet
         # a = type of variable change (+=, -=, or reset)
         
-        effects_df = pd.read_excel("./effects_data.xlsx")
+        effects_df = pd.read_excel("././effects_data.xlsx")
         
         effect_data = effects_df[effects_df["EffectName"] == self.name].iloc[0]
     
