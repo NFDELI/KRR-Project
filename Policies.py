@@ -243,7 +243,7 @@ class Policies:
             can_kill, can_stun, average_damage, total_damage = self.EvaluateTarget(action_value, enemy)
             priority = self.CalculatePriority(can_kill, can_stun, enemy)
             total_priorities = tuple(a + b for a, b in zip(total_priorities, priority))
-            print(f"{total_priorities}\n")
+            #print(f"{total_priorities}\n")
         
         return total_priorities
 
@@ -259,7 +259,7 @@ class Policies:
             (self.health_weight, -enemy.health)
         ]
         
-        print(f"Evaluated {enemy.__class__.__name__} at position {enemy.position}: Priority = {priorities}")
+        # print(f"Evaluated {enemy.__class__.__name__} at position {enemy.position}: Priority = {priorities}")
         # Sort the priorities based on the weight. First Element is the highest priority
         sorted_priorites = sorted(priorities, key = lambda x: x[0], reverse = True)
         # Making sure to return the sorted prioties as tuples.
@@ -276,7 +276,6 @@ class Policies:
         can_kill_with_dot = total_damage >= enemy.health and not enemy.has_taken_action
         can_kill = can_kill_direct or can_kill_with_dot
         can_stun = action_value.is_stun  # and not enemy.is_stunned
-        print(f"SECOND HEREE: {action_value.is_stun}")
         return (can_kill, can_stun, average_damage, total_damage)
     
     def RandomTargetPolicy(self, every_grid):
