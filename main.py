@@ -70,11 +70,16 @@ class PolicyEvaluator:
         return self.fight_end_score
     
     def EvaluateHealthScore(self, hero_dict):
-        total_max_health = sum(int(max_health) for max_health in hero_dict.values().max_health)
-        total_health = sum(int(health) for health in hero_dict.values().health)
-        percentage_score = (total_health / total_max_health) * 100
+        total_max_health = 0
+        for hero in hero_dict.values():
+            total_max_health += hero.max_health
         
-        print(f"Health Score is {total_health}/{total_max_health}: {percentage_score}")
+        total_health = 0
+        for hero in hero_dict.values():
+            total_health += hero.health
+            
+        percentage_score = (total_health / total_max_health) * 100
+        print(f"Health Score is {total_health}/{total_max_health}: {round(percentage_score, 2)}%")
          
     # This function is called when evaluating the total health that each hero has at the end of the simulation.
     def GetTotalHeroTeamHealth(self, hero_grid):
