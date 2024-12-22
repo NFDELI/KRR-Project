@@ -2,7 +2,7 @@ import heapq
 import random
 
 class Policies:
-    def __init__(self, character, kill_weight = 9, stun_weight = 8, turn_weight = 10, rank_weight = 7, health_weight = 6, death_door_weight = 11, heal_weight = 20, damage_weight = 0):
+    def __init__(self, character, kill_weight = 9, stun_weight = 8, turn_weight = 10, rank_weight = 7, health_weight = 6, death_door_weight = 11, heal_weight = 20, damage_weight = 0, cure_weight = 0):
         self.character = character
         self.kill_weight = kill_weight
         self.stun_weight = stun_weight
@@ -13,8 +13,9 @@ class Policies:
         
         self.death_door_weight = death_door_weight
         self.heal_weight = heal_weight
+        self.cure_weight = cure_weight
     
-    def SetPolicyWeights(self, kill = 0, stun = 0, turn = 0, rank = 0, health = 0, death = 0, heal = 0, damage = 0):
+    def SetPolicyWeights(self, kill = 0, stun = 0, turn = 0, rank = 0, health = 0, death = 0, heal = 0, damage = 0, cure = 0):
         self.kill_weight = kill 
         self.stun_weight = stun 
         self.turn_weight = turn 
@@ -22,7 +23,8 @@ class Policies:
         self.health_weight = health 
         self.damage_weight = damage
         self.death_door_weight = death 
-        self.heal_weight = heal 
+        self.heal_weight = heal
+        self.cure_weight = cure 
     
     def BestActionPolicy(self, teamates, enemies):
         # Priority queue for actions.
@@ -36,6 +38,7 @@ class Policies:
                 # Heal Action Found
                 # Priority Format: heal_priority = (-death_door_priority, -effective_heal, ally.health)
                 heal_evaluation = self.BestHealPolicy(action_value, teamates)
+                print(f"Priority for {action_value.name} is {heal_evaluation}")
                 if heal_evaluation:
                     heapq.heappush(action_plan_priority, heal_evaluation)
             elif action_value.is_buff:
@@ -169,6 +172,7 @@ class Policies:
             # Multi-target healing
             total_death_door_priority = 0
             total_effective_heal = 0
+            total_cure = 0
             total_health_priority = 0
             
             for ally in valid_targets:
@@ -185,6 +189,7 @@ class Policies:
                 (self.death_door_weight, -total_death_door_priority),
                 (self.heal_weight, -total_effective_heal),
                 (self.health_weight, total_health_priority),
+                (self.cure_weight, -total_cure),
                 (self.kill_weight, 0),
                 (self.stun_weight, 0),
                 (self.turn_weight, 0),
@@ -199,20 +204,21 @@ class Policies:
         else:
             # Single-target healing (For now, only battlefield Medicine, 'single-target' can cure)
             for ally in valid_targets:
-                cure_value = 0                    
-                if action_value.apply_status_effects[0].name == "Cure":
+                cure_value = 0           
+                if action_value.apply_status_effects[1].name == "Cure":
                     for effect in ally.status_effects:
-                        if effect in ["Bleed", "Blight"]:
-                            cure_value += effect.duration * effect.value
-                            
+                        if effect.name in ["Bleed", "Blight"]:
+                            cure_value += (effect.duration * effect.effect_value)
+                    print(f"Cure Value is: {cure_value}")
                 average_heal = (heal_range[0] + heal_range[1]) / 2
-                effective_heal = min(average_heal, ally.max_health - ally.health) + cure_value
+                effective_heal = min(average_heal, ally.max_health - ally.health) # + cure_value (Cure Value is calculated using another Cure Weight)
                 death_door_priority = 1 if ally.is_at_death_door else 0
                 
                 priorities = [
                     (self.death_door_weight, -death_door_priority),
                     (self.heal_weight, -effective_heal),
                     (self.health_weight, -ally.health),
+                    (self.cure_weight, -cure_value),
                     (self.kill_weight, 0),
                     (self.stun_weight, 0),
                     (self.turn_weight, 0),
@@ -256,7 +262,7 @@ class Policies:
         return dot_damage
 
     def CalculateMultiTargetPriority(self, action_value, valid_targets):
-        total_priorities = (0, 0, 0, 0, 0, 0, 0) 
+        total_priorities = (0, 0, 0, 0, 0, 0, 0, 0) 
     
         for enemy in valid_targets:
             can_kill, can_stun, average_damage, total_damage = self.EvaluateTarget(action_value, enemy)
@@ -277,6 +283,7 @@ class Policies:
             # Prioritise lower health enemies.
             (self.health_weight, -enemy.health),
             (self.heal_weight, 0),
+            (self.cure_weight, 0),
             (self.death_door_weight, 0)
         ]
         

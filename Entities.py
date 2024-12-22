@@ -260,6 +260,7 @@ class Character:
             policy_evaluator.UpdateCharacterActionLog(self, targets_data, action_name_str, results_data)
         else:
             result = chosen_action.DoAction(self, chosen_target, policy_evaluator)
+            print(f"Result is: {result}")
             policy_evaluator.UpdateCharacterActionLog(self, [chosen_target], action_name_str, [result])
             #print(f"{self.__class__.__name__} used action: {action_name_str}! \n")    
     

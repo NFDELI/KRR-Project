@@ -283,8 +283,20 @@ def MyTest():
     Junia = Vestal(position = 4)
     
     Junia.policies.SetPolicyWeights(death = 11, stun = 10, turn = 9, rank = 8, heal = 7, kill = 6, health = 5)
-    Paracelsus.policies.SetPolicyWeights(heal = 11)
+    Paracelsus.policies.SetPolicyWeights(death = 11, cure = 10, stun = 9, turn = 8, rank = 7, kill = 6, health = 5, heal = 4)
     Reynald.policies.SetPolicyWeights(stun = 10, turn = 9, health = 8, kill = 6)
+    
+    Reynald.health = 3
+    
+    Reynald.status_effects.append(StatusEffects("Bleed", 3, 100.0, 1, "dot"))
+    Dismas.status_effects.append(StatusEffects("Bleed", 3, 100.0, 8, "dot"))
+    Dismas.status_effects.append(StatusEffects("Bleed", 3, 100.0, 1, "dot"))
+    Dismas.status_effects.append(StatusEffects("Bleed", 3, 100.0, 1, "dot"))
+    
+    Dismas.health = 3
+    Paracelsus.health = 3
+    Junia.health = 1
+
     
     # Enemies
     Mald = Cutthroat(position = 1)
