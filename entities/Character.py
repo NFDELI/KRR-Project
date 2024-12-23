@@ -1,12 +1,9 @@
-from Attacks import Attacks
+from policy.Policies import Policies
 from StatusEffects import StatusEffects
-from Policies import Policies
-from my_utils import update_positions
+from utils.PositionUtils import update_positions
 import random
-import heapq
-        
 class Character:
-    is_player : bool
+    is_player: bool
     accuracy_base : int
     crit : float
     damage_base: tuple
@@ -69,7 +66,7 @@ class Character:
         self.is_dead = False
         
         self.policies = Policies(self)
-    
+        
     def __lt__(self, other):
         return self.health < other.health
     
@@ -157,39 +154,41 @@ class Character:
         self.health = self.health - damage
         if(self.health < 0):
             self.health = 0
-        is_chara_dead = self.CheckCharacterHealth(policy_evaluator)
-        return is_chara_dead
+        
+        if self.is_player:
+            return self.CheckHeroCharacterHealth(policy_evaluator)
+        else:
+            return self.CheckMonsterCharacterHealth(policy_evaluator)
         
     def TakeStressDamage(self, stress_damage):
         self.stress = self.stress + stress_damage
     
-    def CheckCharacterHealth(self, policy_evaluator):
-        if(self.health <= 0):
-            if(self.is_player):
-                if self.is_at_death_door == False:
-                    policy_evaluator.UpdateHeroEnteredDeathDoor(self)
-                    # Player Character Enters Death's Door.
-                    self.is_at_death_door = True
-                    self.is_death_door_recovering = False
-                    print(f"{self.__class__.__name__} Entered Death's Door!")
-                    return
-                else:
-                    # Player Character is already at Death's Door, roll rng to see if Player Character will die.
-                    isDeathSuccess = random.random() < self.death_blow_res
-                    if isDeathSuccess:
-                        policy_evaluator.UpdateHeroDied()
-                        self.CharacterDies()
-                        return True
-                    else:
-                        print(f"{self.__class__.__name__} SURVIVED DEATH BLOW")
-                        return False
-            else:
+    def CheckHeroCharacterHealth(self, policy_evaluator):
+        if self.health > 0 and self.is_at_death_door:
+            self.is_at_death_door = False
+            self.is_death_door_recovering = True
+            return False
+        
+        if self.is_at_death_door:
+            if random.random() < self.death_blow_res:
+                policy_evaluator.UpdateHeroDied()
                 self.CharacterDies()
                 return True
-        else:
-            if(self.is_player):
-                self.is_at_death_door = False
-                self.is_death_door_recovering = True
+            print(f"{self.__class__.__name__} SURVIVED DEATH BLOW")
+            return False
+        
+        policy_evaluator.UpdateHeroEnteredDeathDoor(self)
+        # Player Character Enters Death's Door.
+        self.is_at_death_door = True
+        self.is_death_door_recovering = False
+        print(f"{self.__class__.__name__} Entered Death's Door!")
+        return False
+    
+    def CheckMonsterCharacterHealth(self, policy_evaluator):
+        if self.health <= 0:
+            self.CharacterDies()
+            return True
+        return False
     
     def Move(self, move_amount):
         # Referencing Second Rank guy and switching place with them.
@@ -252,10 +251,11 @@ class Character:
             for targets in chosen_action.target_position:
                 # Check if Key is valid
                 if targets in grid_target:
-                    result = chosen_action.DoAction(self, grid_target[targets], policy_evaluator)
                     targets_data.append(grid_target[targets])
+                    result = chosen_action.DoAction(self, grid_target[targets], policy_evaluator)
+                    # if targets in grid_target:
                     results_data.append(result)
-                    #print(f"{self.__class__.__name__} used action: {action_name_str}! \n")
+                        #print(f"{self.__class__.__name__} used action: {action_name_str}! \n")
                     
             policy_evaluator.UpdateCharacterActionLog(self, targets_data, action_name_str, results_data)
         else:
@@ -278,10 +278,15 @@ class Character:
             else:
                 # Create Corpse and Replace Dead Character with corpse.
                 print(f"{self.__class__.__name__} [{self.position}] DIED!!")
-                corpse = Corpse(self.position, self.max_health, self.team_grid)
+                corpse = self.CreateCorpse()
                 self.team_grid[self.position] = corpse
                 update_positions(self.team_grid)
 
+    def CreateCorpse(self):
+        # Import Corpse lazily to avoid circular dependency
+        from entities.Corpse import Corpse
+        return Corpse(self.position, self.max_health, self.team_grid)
+    
     def CharacterDisappear(self):        
         del self.team_grid[self.position]
         
@@ -300,35 +305,4 @@ class Character:
     # The goal of this function is to make a generalized Get Action for everyone.
     def GetAction(self, every_grid):
         return self.RandomTargetPolicy(every_grid)
-    
-class Corpse(Character):
-    # Corpse will have a portion of the owner's max hp.
-    def __init__(self, position, owner_max_health, owner_team_grid):
-        super().__init__(False, +0, 0.00, (0, 0), 0, 0, -999, int(owner_max_health * 0.5), position, {}, 0, 0.0, 0.0, 2.0, 2.0, -1)
-        nothing = Attacks((1, 2, 3, 4), (1, 2, 3, 4), [], 100, (0, 0), 0)
-        self.actions_dict['nothing'] = nothing
-        self.decay_counter = 1
-        self.is_corpse = True
-        self.team_grid = owner_team_grid
-    
-    def Decompose(self):
-        if(self.decay_counter > 4):
-            self.CharacterDisappear()
         
-        should_end_fight = True
-        for values in self.team_grid.values():
-            if(values.__class__.__name__ == "Corpse"):
-                return
-            else:
-                should_end_fight = False
-
-        if(should_end_fight):
-            self.CharacterDisappear()
-    
-    def GetAction(self):
-        result = ['nothing', 1]
-        return result
-
-    
-  
-

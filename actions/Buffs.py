@@ -1,4 +1,4 @@
-from Actions import Actions
+from actions.Actions import Actions
 import random
 class Buffs(Actions):
         def __init__(self, position_req, target_position, apply_status_effects, limited_use, is_unlimited = True, is_multi_target = False, name = " ", is_heal =  False):

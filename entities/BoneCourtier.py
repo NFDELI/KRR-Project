@@ -1,5 +1,5 @@
-from Entities import Character
-from Attacks import Attacks
+from entities.Character import Character
+from actions.Attacks import Attacks
 from StatusEffects import StatusEffects
 import random
 

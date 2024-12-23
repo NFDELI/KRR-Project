@@ -1,7 +1,7 @@
-from Entities import Character
-from Attacks import Attacks
+from entities.Character import Character
+from actions.Attacks import Attacks
 from StatusEffects import StatusEffects
-from Buffs import Buffs
+from actions.Buffs import Buffs
 
 class Crusader(Character):
     
@@ -31,8 +31,8 @@ class Crusader(Character):
         #self.actions_dict['inspiring_cry'] = inspiring_cry
         
         # This action is only used for DEBUGGING!
-        nothing = Attacks((1, 2, 3, 4), (1, 2, 3, 4), [], 0, (0, 0), 0, is_unlimited = True)
-        #self.actions_dict['nothing'] = nothing
+        nothing = Attacks((1, 2, 3, 4), (1,), [], 0, (0, 0), 0, is_unlimited = True)
+        self.actions_dict['nothing'] = nothing
     
     # MUST RETURN ACTION NAME AND TARGET!!
     def GetAction(self, every_grid):

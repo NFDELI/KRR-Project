@@ -1,9 +1,7 @@
-from Entities import Character
-from Attacks import Attacks
+from entities.Character import Character
+from actions.Attacks import Attacks
 from StatusEffects import StatusEffects
-from Buffs import Buffs
-import random
-import heapq
+from actions.Buffs import Buffs
 
 class Vestal(Character):
     
@@ -34,8 +32,8 @@ class Vestal(Character):
         #self.actions_dict['mace_bash'] = mace_bash
         
         # This action is only used for DEBUGGING!
-        nothing = Attacks((1, 2, 3, 4), (1, 2, 3, 4), [], 0, (0, 0), 0, is_unlimited = True)
-        #self.actions_dict['nothing'] = nothing
+        nothing = Attacks((1, 2, 3, 4), (1,), [], 0, (0, 0), 0, is_unlimited = True)
+        self.actions_dict['nothing'] = nothing
         
     def GetAction(self, every_grid):
         parent_action = self.policies.BestActionPolicy(every_grid.herogrid_dict, every_grid.enemygrid_dict)

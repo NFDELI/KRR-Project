@@ -145,7 +145,7 @@ class Policies:
             best_priority, best_target, best_action = heapq.heappop(attack_plan_priority)
             return best_action, best_target, self.character.enemy_grid
             
-        return None, None
+        return None, None, None
 
     # Healing Policy is placed here because Vestal is the main healer. (The Plague Docter Mainly Cures DOTs)
     # This Policy is going to

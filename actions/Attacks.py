@@ -1,4 +1,4 @@
-from Actions import Actions
+from actions.Actions import Actions
 from StatusEffects import StatusEffects
 import random 
 class Attacks(Actions):

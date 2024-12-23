@@ -1,16 +1,16 @@
 import numpy as np
 from my_utils import update_positions
 from my_utils import all_values_of_class
-from Crusader import Crusader
-from HighwayMan import HighwayMan
-from PlagueDoctor import PlagueDoctor
-from Vestal import Vestal
-from Cutthroat import Cutthroat
-from Fusilier import Fusilier
-from BoneCourtier import BoneCourtier
+from entities.Crusader import Crusader
+from entities.HighwayMan import HighwayMan
+from entities.PlagueDoctor import PlagueDoctor
+from entities.Vestal import Vestal
+from entities.Cutthroat import Cutthroat
+from entities.Fusilier import Fusilier
+from entities.BoneCourtier import BoneCourtier
+from entities.Corpse import Corpse
 import random
 from collections import deque
-from Entities import Corpse
 from StatusEffects import StatusEffects
 import pandas as pd
 
@@ -19,6 +19,11 @@ class Grid():
         self.herogrid_dict = herogrid
         self.enemygrid_dict = enemygrid
         self.round_counter = 0
+        
+        total_max_health = 0
+        for hero in herogrid.values():
+            total_max_health += hero.max_health
+        self.total_hero_max_health = total_max_health
 
 class PolicyEvaluator:
     def __init__(self):
@@ -70,17 +75,14 @@ class PolicyEvaluator:
         print(f"Round Score: {round_score}")
         return self.fight_end_score
     
-    def EvaluateHealthScore(self, hero_dict):
-        total_max_health = 0
-        for hero in hero_dict.values():
-            total_max_health += hero.max_health
-        
+    def EvaluateHealthScore(self, grid):
         total_health = 0
-        for hero in hero_dict.values():
-            total_health += hero.health
+        if grid.herogrid_dict:
+            for hero in grid.herogrid_dict.values():
+                total_health += hero.health
             
-        percentage_score = (total_health / total_max_health) * 100
-        print(f"Health Score is {total_health}/{total_max_health}: {round(percentage_score, 2)}%")
+        percentage_score = (total_health / grid.total_hero_max_health) * 100
+        print(f"Health Score is {total_health}/{grid.total_hero_max_health}: {round(percentage_score, 2)}%")
          
     # This function is called when evaluating the total health that each hero has at the end of the simulation.
     def GetTotalHeroTeamHealth(self, hero_grid):
@@ -122,7 +124,14 @@ def GenerateNextRound(herogrid_dict, enemygrid_dict, grid):
     
     initiative_queue = deque(sorted(initiative_queue, key=lambda Character: Character.initiative, reverse=True))
     return initiative_queue
-def LoadBestStrategy(Crusader, HighwayMan, PlagueDoctor, Vestal):
+
+class Character:
+    crusader: Crusader
+    highway_man: HighwayMan
+    plague_doctor: PlagueDoctor
+    vestal: Vestal
+
+def LoadBestStrategy(Character):
     # Crusader has high single target damage and has a stun. (Mainly targets Front Ranks and Crusader is a Tank)
     # HighwayMan has good damage and can target multiple enemies. (Can Target Back Ranks)
     # PlagueDoctor can Deal a lot of Damage Over Time, stun, cure (heal DOTs) and attack the back ranks of enemies.
@@ -130,7 +139,9 @@ def LoadBestStrategy(Crusader, HighwayMan, PlagueDoctor, Vestal):
     
     # Function format: SetPolicyWeights(self, kill = 0, stun = 0, turn = 0, rank = 0, health = 0, death = 0, heal = 0):
     
-    Crusader.policies.SetPolicyWeights(kill = 10, turn = 9, stun = 8, health = 7)
+    crusader = Character.crusader
+    
+    crusader.policies.SetPolicyWeights(kill = 10, turn = 9, stun = 8, health = 7)
     HighwayMan.policies.SetPolicyWeights(kill = 10, turn = 9, rank = 8, health = 7)
     PlagueDoctor.policies.SetPolicyWeights(death = 11, kill = 10, turn = 9, rank = 8, heal = 6, health = 5)
     Vestal.policies.SetPolicyWeights(death = 11, stun = 10, turn = 9, rank = 8, heal = 7, health = 6, kill = 5)
@@ -189,6 +200,11 @@ def main():
     Paracelsus = PlagueDoctor(position = 3)
     Junia = Vestal(position = 4)
     
+    # Reynald.health = 1
+    # Dismas.health = 1
+    # Paracelsus.health = 1
+    # Junia.health = 1
+    
     # Enemies
     Mald = Cutthroat(position = 1)
     Axel = Fusilier(position = 2)
@@ -229,7 +245,9 @@ def main():
     for enemy in enemies:
         enemy.team_grid = grid.enemygrid_dict
         enemy.enemy_grid = grid.herogrid_dict
-        
+    
+    print(herogrid_dict)
+    
     while(grid.herogrid_dict and (not all_values_of_class(grid.enemygrid_dict, Corpse) and grid.round_counter < 50)):
         
         print(f"==========Hero Team=============")
@@ -270,7 +288,7 @@ def main():
     for value in grid.herogrid_dict.values():
         print(f"{value.__class__.__name__} has {value.health} hp left!")
     
-    policy_evaluator.EvaluateHealthScore(grid.herogrid_dict)
+    policy_evaluator.EvaluateHealthScore(grid)
     
     # Display Action Log
     CreateDataFrame(policy_evaluator.actions_log)    

@@ -1,8 +1,7 @@
-from Entities import Character
-from Attacks import Attacks
+from entities.Character import Character
+from actions.Attacks import Attacks
 from StatusEffects import StatusEffects
-from Buffs import Buffs
-import random
+from actions.Buffs import Buffs
 
 class PlagueDoctor(Character):
     
@@ -32,8 +31,8 @@ class PlagueDoctor(Character):
         self.actions_dict["battlefield_medicine"] = battlefield_medicine
 
         # This action is only used for DEBUGGING!
-        nothing = Attacks((1, 2, 3, 4), (1, 2, 3, 4), [], 0, (0, 0), 0, is_unlimited = True, name = "Nothing")
-        # self.actions_dict['nothing'] = nothing
+        nothing = Attacks((1, 2, 3, 4), (1,), [], 0, (0, 0), 0, is_unlimited = True, name = "Nothing")
+        self.actions_dict['nothing'] = nothing
     
     def GetAction(self, every_grid):
         parent_action = self.policies.BestActionPolicy(every_grid.herogrid_dict, every_grid.enemygrid_dict)
