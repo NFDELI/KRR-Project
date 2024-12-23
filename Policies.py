@@ -204,14 +204,11 @@ class Policies:
         else:
             # Single-target healing (For now, only battlefield Medicine, 'single-target' can cure)
             for ally in valid_targets:
-                cure_value = 0           
-                if action_value.apply_status_effects[1].name == "Cure":
-                    for effect in ally.status_effects:
-                        if effect.name in ["Bleed", "Blight"]:
-                            cure_value += (effect.duration * effect.effect_value)
-                    print(f"Cure Value is: {cure_value}")
+                cure_value = 0        
+                if "Cure" in action_value.apply_status_effects: #action_value.apply_status_effects[1].name == "Cure"
+                    cure_value = self.CalculateCureValue(ally.status_effects)
                 average_heal = (heal_range[0] + heal_range[1]) / 2
-                effective_heal = min(average_heal, ally.max_health - ally.health) # + cure_value (Cure Value is calculated using another Cure Weight)
+                effective_heal = min(average_heal, ally.max_health - ally.health)
                 death_door_priority = 1 if ally.is_at_death_door else 0
                 
                 priorities = [
@@ -234,7 +231,14 @@ class Policies:
             return heapq.heappop(heal_plan_priority)
         else:
             return None
-        
+    
+    def CalculateCureValue(self, ally_status_effects):
+        cure_value = 0
+        for effect in ally_status_effects:
+            if effect.name in ["Bleed", "Blight"]:
+                cure_value += (effect.duration * effect.effect_value)
+        return cure_value
+    
     # Checks if character is in proper position and action is available.
     def IsActionUsable(self, action):
         if not action or (action.limited_use <= 0 and not action.is_unlimited):

@@ -29,8 +29,8 @@ class Vestal(Character):
         
         self.actions_dict['dazling_light'] = dazling_light
         self.actions_dict['judgement'] = judgement
-        # self.actions_dict['divine_grace'] = divine_grace
-        # self.actions_dict['divine_comfort'] = divine_comfort
+        self.actions_dict['divine_grace'] = divine_grace
+        self.actions_dict['divine_comfort'] = divine_comfort
         #self.actions_dict['mace_bash'] = mace_bash
         
         # This action is only used for DEBUGGING!

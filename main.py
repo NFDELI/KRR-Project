@@ -138,7 +138,7 @@ def LoadBestStrategy(Crusader, HighwayMan, PlagueDoctor, Vestal):
 def LoadHealthFocusStrategy(Crusader, HighwayMan, PlagueDoctor, Vestal):
     Crusader.policies.SetPolicyWeights(stun = 10, turn = 9, health = 8, kill = 6)
     HighwayMan.policies.SetPolicyWeights(kill = 10, turn = 9, rank = 8, health = 7)
-    PlagueDoctor.policies.SetPolicyWeights(death = 11, heal = 10, turn = 8, rank = 7, kill = 6, stun = 5)
+    PlagueDoctor.policies.SetPolicyWeights(death = 11, cure = 10, turn = 9, stun = 8, rank = 7, kill = 6)
     Vestal.policies.SetPolicyWeights(death = 11, heal = 10, turn = 9, kill = 7, stun = 6)
     
 def CreateDataFrame(data):
@@ -286,9 +286,9 @@ def MyTest():
     Paracelsus.policies.SetPolicyWeights(death = 11, cure = 10, stun = 9, turn = 8, rank = 7, kill = 6, health = 5, heal = 4)
     Reynald.policies.SetPolicyWeights(stun = 10, turn = 9, health = 8, kill = 6)
     
-    Reynald.health = 3
+    #Reynald.health = 3
     
-    Reynald.status_effects.append(StatusEffects("Bleed", 3, 100.0, 1, "dot"))
+    # Reynald.status_effects.append(StatusEffects("Bleed", 3, 100.0, 1, "dot"))
     Dismas.status_effects.append(StatusEffects("Bleed", 3, 100.0, 8, "dot"))
     Dismas.status_effects.append(StatusEffects("Bleed", 3, 100.0, 1, "dot"))
     Dismas.status_effects.append(StatusEffects("Bleed", 3, 100.0, 1, "dot"))
@@ -379,7 +379,7 @@ def MyTest():
     # print(Other.health)
     CreateDataFrame(policy_evaluator.actions_log)
 
-MyTest()
+main()
 
 
 # TODO:

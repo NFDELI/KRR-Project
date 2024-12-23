@@ -49,9 +49,10 @@ class Buffs(Actions):
                         for effect in chosen_target.status_effects[:]:
                             if effect.name in ["Bleed", "Blight"]:
                                 policy_evaluator.UpdateHeroHeal(effect.effect_value * effect.duration)
-                                chosen_target.ReduceStatusEffectsDuration(effect)
                                 actual_cure_value += effect.effect_value * effect.duration
+                                chosen_target.ReduceStatusEffectsDuration(effect)
                                 effect.duration = 0
+                        
                     
                     if(effect.name == "Heal"):
                         old_health = chosen_target.health
