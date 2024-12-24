@@ -33,6 +33,14 @@ class PlagueDoctor(Character):
         # This action is only used for DEBUGGING!
         nothing = Attacks((1, 2, 3, 4), (1,), [], 0, (0, 0), 0, is_unlimited = True, name = "Nothing")
         self.actions_dict['nothing'] = nothing
+        
+        self.idle_img = "visuals/doctor_anim/Plague_doctor_sprite_combat.png"
+        self.defend_img = "visuals/doctor_anim/Plague_doctor_sprite_defend.png"
+        self.grenade_img = "visuals/doctor_anim/Plague_doctor_sprite_grenade.png"
+        self.heal_img = "visuals/doctor_anim/Plague_doctor_sprite_heal.png"
+        
+        self.offset = (0, 100)
+        self.scale = (150, 300)
     
     def GetAction(self, every_grid):
         parent_action = self.policies.BestActionPolicy(every_grid.herogrid_dict, every_grid.enemygrid_dict)

@@ -30,6 +30,13 @@ class HighwayMan(Character):
         nothing = Attacks((1, 2, 3, 4), (1,), [], 0, (0, 0), 0, is_unlimited = True, name = "Nothing", is_multi_target = False)
         self.actions_dict['nothing'] = nothing
         
+        self.idle_img = "visuals/highwayman_anim/Highwayman_sprite_combat.png"
+        self.defend_img = "visuals/highwayman_anim/Highwayman_sprite_defend.png"
+        self.grape_img = "visuals/highwayman_anim/Highwayman_sprite_grape.png"
+        self.slice_img = "visuals/highwayman_anim/Highwayman_sprite_slice.png"
+        self.offset = (0, 100)
+        self.scale = (150, 300)
+        
     def GetAction(self, every_grid):    
         parent_action = self.policies.BestActionPolicy(every_grid.herogrid_dict, every_grid.enemygrid_dict)
         return parent_action

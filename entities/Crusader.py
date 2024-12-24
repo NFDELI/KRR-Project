@@ -33,6 +33,15 @@ class Crusader(Character):
         # This action is only used for DEBUGGING!
         nothing = Attacks((1, 2, 3, 4), (1,), [], 0, (0, 0), 0, is_unlimited = True)
         self.actions_dict['nothing'] = nothing
+        
+        # Visual Images:
+        self.idle_img = "visuals/crusader_anim/Crusader_sprite_combat.png"
+        self.defend_img = "visuals/crusader_anim/Crusader_sprite_defend.png"
+        self.stun_img = "visuals/crusader_anim/Crusader_sprite_stun.png"
+        self.swing_img = "visuals/crusader_anim/Crusader_sprite_swing.png"
+        self.paper_img = "visuals/crusader_anim/Crusader_sprite_paper.png"
+        self.offset = (0, 0)
+        self.scale = (150, 400)
     
     # MUST RETURN ACTION NAME AND TARGET!!
     def GetAction(self, every_grid):

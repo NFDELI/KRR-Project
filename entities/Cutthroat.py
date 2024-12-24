@@ -25,6 +25,14 @@ class Cutthroat(Character):
         self.actions_dict['shank'] = shank
         self.actions_dict['nothing'] = nothing
     
+        self.idle_img = "visuals/cutthroat_anim/cutthroat_sprite_combat.png"
+        self.defend_img = "visuals/cutthroat_anim/cutthroat_sprite_defend.png"
+        self.shank_img = "visuals/cutthroat_anim/cutthroat_sprite_shank.png"
+        self.slice_img = "visuals/cutthroat_anim/cutthroat_sprite_slice.png"
+        
+        self.offset = (0, 100)
+        self.scale = (150, 300)
+        
     def GetAction(self, every_grid):
         return self.CutthroatPolicy(every_grid)
 

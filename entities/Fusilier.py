@@ -19,6 +19,13 @@ class Fusilier(Character):
         self.actions_dict['rushed_shot'] = rushed_shot
         self.actions_dict['nothing'] = nothing
         
+        self.idle_img = "visuals/fusilier_anim/fusilier_sprite_combat.png"
+        self.attack_img = "visuals/fusilier_anim/fusilier_sprite_attack.png"
+        self.defend_img = "visuals/fusilier_anim/fusilier_sprite_defend.png"
+        
+        self.offset = (0, 100)
+        self.scale = (150, 300)
+        
     def GetAction(self, every_grid):
         return self.FocusFirstRankPolicy()
     

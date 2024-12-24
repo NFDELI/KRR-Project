@@ -9,6 +9,7 @@ from entities.Cutthroat import Cutthroat
 from entities.Fusilier import Fusilier
 from entities.BoneCourtier import BoneCourtier
 from entities.Corpse import Corpse
+from visuals.PyGameVisuals import SimulationVisuals
 import random
 from collections import deque
 from StatusEffects import StatusEffects
@@ -125,13 +126,7 @@ def GenerateNextRound(herogrid_dict, enemygrid_dict, grid):
     initiative_queue = deque(sorted(initiative_queue, key=lambda Character: Character.initiative, reverse=True))
     return initiative_queue
 
-class Character:
-    crusader: Crusader
-    highway_man: HighwayMan
-    plague_doctor: PlagueDoctor
-    vestal: Vestal
-
-def LoadBestStrategy(Character):
+def LoadBestStrategy(Crusader, HighwayMan, PlagueDoctor, Vestal):
     # Crusader has high single target damage and has a stun. (Mainly targets Front Ranks and Crusader is a Tank)
     # HighwayMan has good damage and can target multiple enemies. (Can Target Back Ranks)
     # PlagueDoctor can Deal a lot of Damage Over Time, stun, cure (heal DOTs) and attack the back ranks of enemies.
@@ -139,9 +134,7 @@ def LoadBestStrategy(Character):
     
     # Function format: SetPolicyWeights(self, kill = 0, stun = 0, turn = 0, rank = 0, health = 0, death = 0, heal = 0):
     
-    crusader = Character.crusader
-    
-    crusader.policies.SetPolicyWeights(kill = 10, turn = 9, stun = 8, health = 7)
+    Crusader.policies.SetPolicyWeights(kill = 10, turn = 9, stun = 8, health = 7)
     HighwayMan.policies.SetPolicyWeights(kill = 10, turn = 9, rank = 8, health = 7)
     PlagueDoctor.policies.SetPolicyWeights(death = 11, kill = 10, turn = 9, rank = 8, heal = 6, health = 5)
     Vestal.policies.SetPolicyWeights(death = 11, stun = 10, turn = 9, rank = 8, heal = 7, health = 6, kill = 5)
@@ -233,6 +226,7 @@ def main():
     
     grid = Grid(herogrid_dict, enemygrid_dict)
     policy_evaluator = PolicyEvaluator()
+    simulation_visuals = SimulationVisuals(grid, policy_evaluator)
     
     # Assign team and enemy grids for heroes
     heroes = [Reynald, Dismas, Paracelsus, Junia]
@@ -246,8 +240,8 @@ def main():
         enemy.team_grid = grid.enemygrid_dict
         enemy.enemy_grid = grid.herogrid_dict
     
-    print(herogrid_dict)
-    
+    simulation_visuals.run()
+    # Simulation Starts here!
     while(grid.herogrid_dict and (not all_values_of_class(grid.enemygrid_dict, Corpse) and grid.round_counter < 50)):
         
         print(f"==========Hero Team=============")
@@ -291,7 +285,7 @@ def main():
     policy_evaluator.EvaluateHealthScore(grid)
     
     # Display Action Log
-    CreateDataFrame(policy_evaluator.actions_log)    
+    CreateDataFrame(policy_evaluator.actions_log)  
 
 def MyTest():
     # Heroes
