@@ -7,3 +7,6 @@ def update_positions(grid_dict):
     grid_dict.clear()
     # This if statement ensures to end the simulation if one side of the team grid are just corpses.
     grid_dict.update(new_grid)
+    
+def all_values_of_class(dictionary, cls):
+    return all(isinstance(value, cls) for value in dictionary.values())

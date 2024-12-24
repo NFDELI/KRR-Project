@@ -240,7 +240,7 @@ def main():
         enemy.team_grid = grid.enemygrid_dict
         enemy.enemy_grid = grid.herogrid_dict
     
-    simulation_visuals.run()
+    # simulation_visuals.run()
     # Simulation Starts here!
     while(grid.herogrid_dict and (not all_values_of_class(grid.enemygrid_dict, Corpse) and grid.round_counter < 50)):
         
@@ -251,7 +251,10 @@ def main():
         print(f"==========Enemy Team=============")
         for key, value in grid.enemygrid_dict.items():
             print(f"Position Key: {key}, Value: {value.__class__.__name__}, Health: {value.health}, Stunned: {value.is_stunned}")
-        print("\n\n")    
+        print("\n\n")
+        simulation_visuals.DisplayCurrentFrame()
+        simulation_visuals.VisualPause()
+        
         turn_order = GenerateNextRound(grid.herogrid_dict, grid.enemygrid_dict, grid)
         
         # Display Turn Order

@@ -32,6 +32,7 @@ class Cutthroat(Character):
         
         self.offset = (0, 100)
         self.scale = (150, 300)
+        self.text_offset = (150, 0)
         
     def GetAction(self, every_grid):
         return self.CutthroatPolicy(every_grid)

@@ -1,6 +1,9 @@
 import pygame
 import sys
 
+from utils.PositionUtils import all_values_of_class
+from entities.Corpse import Corpse
+
 class SimulationVisuals():
     def __init__(self, grid, policy_evaluator, width = 1280, height=720):
         # Initialize Pygame
@@ -13,7 +16,7 @@ class SimulationVisuals():
         # Define colors
         self.BLACK = (0, 0, 0)
         self.RED = (255, 0, 0)
-
+        
         # Running state
         self.running = True
         
@@ -24,70 +27,90 @@ class SimulationVisuals():
         self.policy_evaluator = policy_evaluator
         
         self.position_offset_x = 125
+        
+        # Frame Rate
+        self.clock = pygame.time.Clock()
+        self.fps = 10
+        
+        # Text Fonts
+        self.font = pygame.font.Font(None, 24)
 
     def handle_events(self):
         """Handle user input and events."""
         for event in pygame.event.get():
             if event.type == pygame.QUIT:  # Handle the close button
                 self.running = False
-
-    def update(self):
-        """Update game state (logic)."""
-        pass  # Add game logic here in the future
-
-    def draw(self):
-        """Draw everything on the screen."""
-        # Clear the screen
-        self.screen.fill(self.BLACK)
-
-        self.DrawHeroNeutralState()
-        self.DrawEnemyNeutralState()
-        
-        # Draw a red rectangle
-        # pygame.draw.rect(self.screen, self.RED, (0, 0, 200, 100))  # x, y, width, height
-
-        # # Update the display
-        pygame.display.flip()
-
-    def DrawHeroNeutralState(self):
-        hero_dict = self.grid.herogrid_dict
-        Crusader_idle = pygame.image.load(hero_dict[1].idle_img)
-        self.ApplyImageModify(1, Crusader_idle)
-        
-        Highwayman_idle = pygame.image.load(hero_dict[2].idle_img)
-        self.ApplyImageModify(2, Highwayman_idle)
-        
-        Plague_Doctor_idle = pygame.image.load(hero_dict[3].idle_img)
-        self.ApplyImageModify(3, Plague_Doctor_idle)
-        
-        Vestal_idle = pygame.image.load(hero_dict[4].idle_img)
-        self.ApplyImageModify(4, Vestal_idle)
+            
+            # Check if the right arrow key was pressed
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RIGHT:
+                    print("Right arrow key pressed!")
+                    self.screen.fill(self.BLACK)
+                    pygame.display.flip()
+                    # SHOW NEXT STEP
     
-    def DrawEnemyNeutralState(self):
-        enemy_dict = self.grid.enemygrid_dict
-        Cutthroat_idle = pygame.image.load(enemy_dict[1].idle_img)
-        self.ApplyRightImageModify(1, Cutthroat_idle)
+    def DisplayCurrentFrame(self):
+        self.DrawAllCharacters()
+        self.DisplayHealthValues()
+
+        pygame.display.flip()
         
-        Fusilier_idle = pygame.image.load(enemy_dict[2].idle_img)
-        self.ApplyRightImageModify(2, Fusilier_idle)
+    def DrawAllCharacters(self):
+        self.screen.fill(self.BLACK)
         
-    def ApplyImageModify(self, position_id, image):
-        hero_dict = self.grid.herogrid_dict
-        image = pygame.transform.scale(image, (hero_dict[position_id].scale))
-        self.screen.blit(image, ((400 - ((position_id - 1) * self.position_offset_x)) + hero_dict[position_id].offset[0], 150 + hero_dict[position_id].offset[1]))
+        # This function will draw all characters in the grid in idle state.
+        grid = self.grid
+        for position, hero in grid.herogrid_dict.items():
+            idle_img = pygame.image.load(hero.idle_img)
+            self.ApplyImageModify(hero, position, idle_img)
         
-    def ApplyRightImageModify(self, position_id, image):
-        enemy_dict = self.grid.enemygrid_dict
-        image = pygame.transform.scale(image, (enemy_dict[position_id].scale))
+        for position, enemy in grid.enemygrid_dict.items():
+            idle_img = pygame.image.load(enemy.idle_img)
+            self.ApplyRightImageModify(enemy, position, idle_img)
+            
+        pygame.display.flip()
+    
+    def DisplayHealthValues(self):
+        grid = self.grid
+        for position, hero in grid.herogrid_dict.items():
+            health_text = self.font.render(f"HP: {hero.health}/{hero.max_health}", True, (255, 255, 255))
+            text_pos = ((450 - ((position - 1) * self.position_offset_x)) + hero.offset[0], 600 + hero.text_offset[1])
+            self.screen.blit(health_text, text_pos)
+        
+        for position, enemy in grid.enemygrid_dict.items():
+            health_text = self.font.render(f"HP: {enemy.health}/{enemy.max_health}", True, (255, 255, 255))
+            text_pos = ((600 + ((position - 1) * self.position_offset_x)) + enemy.offset[0], 600 + enemy.text_offset[1])
+            self.screen.blit(health_text, text_pos)
+    
+    def ApplyImageModify(self, hero, position_id, image):
+        image = pygame.transform.scale(image, (hero.scale))
+        self.screen.blit(image, ((400 - ((position_id - 1) * self.position_offset_x)) + hero.offset[0], 150 + hero.offset[1]))
+        
+    def ApplyRightImageModify(self, enemy, position_id, image):
+        image = pygame.transform.scale(image, (enemy.scale))
         flipped_image = pygame.transform.flip(image, True, False)
-        self.screen.blit(flipped_image, ((600 + ((position_id - 1) * self.position_offset_x)) + enemy_dict[position_id].offset[0], 150 + enemy_dict[position_id].offset[1]))
+        self.screen.blit(flipped_image, ((600 + ((position_id - 1) * self.position_offset_x)) + enemy.offset[0], 150 + enemy.offset[1]))
+    
+    def VisualPause(self):
+        paused = True
+        while paused:
+            for event in pygame.event.get():
+                if event.type == pygame.KEYDOWN:
+                    # Press Enter to continue
+                    if event.key == pygame.K_RETURN:  
+                        paused = False
+                if event.type == pygame.QUIT:
+                    paused = False
+                    # This will end the while loop of the simulation.
+                    self.grid.round_counter = 999
     
     def run(self):
         """Main game loop."""
         while self.running:
             self.handle_events()
-            self.update()
-            self.draw()
+            # self.update()
+            # self.draw()
+            self.clock.tick(self.fps)
 
         # Quit Pygame
         pygame.quit()

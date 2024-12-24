@@ -42,6 +42,7 @@ class Crusader(Character):
         self.paper_img = "visuals/crusader_anim/Crusader_sprite_paper.png"
         self.offset = (0, 0)
         self.scale = (150, 400)
+        self.text_offset = (0, 0)
     
     # MUST RETURN ACTION NAME AND TARGET!!
     def GetAction(self, every_grid):

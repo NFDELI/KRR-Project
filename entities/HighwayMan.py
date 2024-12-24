@@ -36,6 +36,7 @@ class HighwayMan(Character):
         self.slice_img = "visuals/highwayman_anim/Highwayman_sprite_slice.png"
         self.offset = (0, 100)
         self.scale = (150, 300)
+        self.text_offset = (0, 0)
         
     def GetAction(self, every_grid):    
         parent_action = self.policies.BestActionPolicy(every_grid.herogrid_dict, every_grid.enemygrid_dict)

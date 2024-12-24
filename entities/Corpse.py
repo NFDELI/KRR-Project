@@ -9,7 +9,12 @@ class Corpse(Character):
         self.decay_counter = 1
         self.is_corpse = True
         self.team_grid = owner_team_grid
-    
+        
+        self.idle_img = "visuals/corpse_anim/cutthroat_sprite_dead.png"
+        self.offset = (0, 300)
+        self.scale = (150, 100)
+        self.text_offset = (0, 0)
+
     def Decompose(self):
         if(self.decay_counter > 4):
             self.CharacterDisappear()

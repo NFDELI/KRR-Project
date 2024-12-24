@@ -31,14 +31,14 @@ class Policies:
         # Format = (Priority, target, Action)
         action_plan_priority = []
         for action_key, action_value in self.character.actions_dict.items():
-            print(f"Checking Action {action_value.name}")
+            # print(f"Checking Action {action_value.name}")
             if not self.IsActionUsable(action_value):
                 continue
             if action_value.is_heal:
                 # Heal Action Found
                 # Priority Format: heal_priority = (-death_door_priority, -effective_heal, ally.health)
                 heal_evaluation = self.BestHealPolicy(action_value, teamates)
-                print(f"Priority for {action_value.name} is {heal_evaluation}")
+                # print(f"Priority for {action_value.name} is {heal_evaluation}")
                 if heal_evaluation:
                     heapq.heappush(action_plan_priority, heal_evaluation)
             elif action_value.is_buff:
@@ -144,8 +144,9 @@ class Policies:
         if attack_plan_priority:
             best_priority, best_target, best_action = heapq.heappop(attack_plan_priority)
             return best_action, best_target, self.character.enemy_grid
-            
-        return None, None, None
+        
+        # Character Found no action to use, usually due to mispositioning.
+        return "Nothing", 1, self.character.enemy_grid
 
     # Healing Policy is placed here because Vestal is the main healer. (The Plague Docter Mainly Cures DOTs)
     # This Policy is going to

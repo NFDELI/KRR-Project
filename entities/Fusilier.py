@@ -25,6 +25,7 @@ class Fusilier(Character):
         
         self.offset = (0, 100)
         self.scale = (150, 300)
+        self.text_offset = (0, 0)
         
     def GetAction(self, every_grid):
         return self.FocusFirstRankPolicy()
