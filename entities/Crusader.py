@@ -24,9 +24,9 @@ class Crusader(Character):
 
         inspiring_cry = Attacks((1, 2, 3, 4), (1, 2, 3, 4), [], 10.00, (0, 0), 0, True, stress_damage = -5, is_traget_friendly = True, name = "Inspiring_Cry")
         
-        self.actions_dict['smite'] = smite
-        self.actions_dict['stunning_blow'] = stunning_blow
-        self.actions_dict['zealous_accusation'] = zealous_accusation
+        # self.actions_dict['smite'] = smite
+        # self.actions_dict['stunning_blow'] = stunning_blow
+        # self.actions_dict['zealous_accusation'] = zealous_accusation
         #self.actions_dict['bulwark_of_faith'] = bulwark_of_faith
         #self.actions_dict['inspiring_cry'] = inspiring_cry
         
@@ -43,7 +43,8 @@ class Crusader(Character):
         self.offset = (0, 0)
         self.scale = (150, 400)
         self.text_offset = (0, 0)
-    
+
+        self.name = "Crusader"
     # MUST RETURN ACTION NAME AND TARGET!!
     def GetAction(self, every_grid):
         # How do I call GetAction of the Parent Character class?

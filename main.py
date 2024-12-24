@@ -204,6 +204,10 @@ def main():
     Carlos = Cutthroat(position = 3)
     Miguel = Fusilier(position = 4)
     
+    Mald.status_effects.append(StatusEffects("Stun", 1, 1.0, 1, "stun"))
+    Axel.status_effects.append(StatusEffects("Stun", 1, 1.0, 1, "stun"))
+    Carlos.status_effects.append(StatusEffects("Stun", 1, 1.0, 1, "stun"))
+    
     #LoadBestStrategy(Reynald, Dismas, Paracelsus, Junia)
     LoadHealthFocusStrategy(Reynald, Dismas, Paracelsus, Junia)
     
@@ -212,9 +216,9 @@ def main():
     
     herogrid_dict = {
         Reynald.position : Reynald,
-        Dismas.position : Dismas,
-        Paracelsus.position : Paracelsus,
-        Junia.position : Junia
+        # Dismas.position : Dismas,
+        # Paracelsus.position : Paracelsus,
+        # Junia.position : Junia
     }
     
     enemygrid_dict = {
@@ -236,6 +240,7 @@ def main():
 
     # Assign team and enemy grids for enemies
     enemies = [Mald, Axel, Carlos, Miguel, Quary]
+    
     for enemy in enemies:
         enemy.team_grid = grid.enemygrid_dict
         enemy.enemy_grid = grid.herogrid_dict
@@ -249,9 +254,12 @@ def main():
             print(f"Position Key: {key}, Value: {value.__class__.__name__}, Health: {value.health}, Stunned: {value.is_stunned}")
         print("\n\n")
         print(f"==========Enemy Team=============")
+        
         for key, value in grid.enemygrid_dict.items():
+            
             print(f"Position Key: {key}, Value: {value.__class__.__name__}, Health: {value.health}, Stunned: {value.is_stunned}")
         print("\n\n")
+        
         simulation_visuals.DisplayCurrentFrame()
         simulation_visuals.VisualPause()
         
@@ -266,6 +274,10 @@ def main():
                 break
             character_to_act = turn_order.popleft()
             character_decision, character_target, target_grid = character_to_act.GetAction(grid)
+            
+            # Display Character Action and Target Intention
+            simulation_visuals.DisplayCharacterIntention(character_to_act.name, character_decision, character_target.position)
+            simulation_visuals.VisualPause()
             
             character_to_act.DoAction(character_decision, target_grid[character_target.position], target_grid, policy_evaluator)
             character_to_act.has_taken_action = True

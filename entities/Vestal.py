@@ -40,6 +40,7 @@ class Vestal(Character):
         self.offset = (0, 100) # was (0, 100)
         self.scale = (150, 300)
         self.text_offset = (0, 0)
+        self.name = "Vestal"
         
         # This action is only used for DEBUGGING!
         nothing = Attacks((1, 2, 3, 4), (1,), [], 0, (0, 0), 0, is_unlimited = True)

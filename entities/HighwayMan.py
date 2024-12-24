@@ -37,6 +37,7 @@ class HighwayMan(Character):
         self.offset = (0, 100)
         self.scale = (150, 300)
         self.text_offset = (0, 0)
+        self.name = "Highway Man"
         
     def GetAction(self, every_grid):    
         parent_action = self.policies.BestActionPolicy(every_grid.herogrid_dict, every_grid.enemygrid_dict)

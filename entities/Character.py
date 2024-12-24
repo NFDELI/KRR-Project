@@ -166,7 +166,7 @@ class Character:
     def CheckHeroCharacterHealth(self, policy_evaluator):
         if self.health > 0 and self.is_at_death_door:
             self.is_at_death_door = False
-            self.is_death_door_recovering = True
+            # self.is_death_door_recovering = True
             return False
         
         if self.is_at_death_door:

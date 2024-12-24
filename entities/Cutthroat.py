@@ -33,6 +33,7 @@ class Cutthroat(Character):
         self.offset = (0, 100)
         self.scale = (150, 300)
         self.text_offset = (150, 0)
+        self.name = "Cutthroat"
         
     def GetAction(self, every_grid):
         return self.CutthroatPolicy(every_grid)
@@ -61,7 +62,7 @@ class Cutthroat(Character):
                 action_to_use = slice_and_dice
                 action_target = every_grid.herogrid_dict[1]
         
-        if not action_to_use or  action_target:
+        if not action_to_use or action_target:
             action_to_use = slice_and_dice
             action_target = every_grid.herogrid_dict[1]
         

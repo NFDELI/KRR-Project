@@ -3,12 +3,16 @@ import sys
 
 from utils.PositionUtils import all_values_of_class
 from entities.Corpse import Corpse
+from actions.Attacks import Attacks
 
 class SimulationVisuals():
     def __init__(self, grid, policy_evaluator, width = 1280, height=720):
         # Initialize Pygame
         pygame.init()
 
+        self.screen_width = width
+        self.screen_height = height
+        
         # Set up the screen
         self.screen = pygame.display.set_mode((width, height))
         pygame.display.set_caption("Pygame Basics")
@@ -27,6 +31,7 @@ class SimulationVisuals():
         self.policy_evaluator = policy_evaluator
         
         self.position_offset_x = 125
+        self.effect_icon_offset_x = 125
         
         # Frame Rate
         self.clock = pygame.time.Clock()
@@ -34,6 +39,12 @@ class SimulationVisuals():
         
         # Text Fonts
         self.font = pygame.font.Font(None, 24)
+        self.intention_font = pygame.font.Font(None, 28)
+        
+        # Status Effect Icons:
+        self.stun_icon = "visuals/status_effect_icons/Stun.png"
+        self.bleed_icon = "visuals/status_effect_icons/Bleed.png"
+        self.blight_icon = "visuals/status_effect_icons/Blight.png"
 
     def handle_events(self):
         """Handle user input and events."""
@@ -50,12 +61,44 @@ class SimulationVisuals():
                     # SHOW NEXT STEP
     
     def DisplayCurrentFrame(self):
-        self.DrawAllCharacters()
+        self.DisplayAllCharacters()
         self.DisplayHealthValues()
+        self.DisplayCharacterStatusEffects()
 
         pygame.display.flip()
+    
+    def DisplayCharacterStatusEffects(self):
+        grid = self.grid
+        for position, enemy in grid.enemygrid_dict.items():
+            for effect in enemy.status_effects:
+                if "Bleed" in effect.name:
+                    bleed_img = pygame.image.load(self.bleed_icon)
+                    self.ApplyRightIconImageModify(enemy, enemy.position, bleed_img, 645)
+                if "Blight" in effect.name:
+                    blight_img = pygame.image.load(self.blight_icon)
+                    self.ApplyRightIconImageModify(enemy, enemy.position, blight_img, 670)
+                if "Stun" in effect.name:
+                    stun_img = pygame.image.load(self.stun_icon)
+                    self.ApplyRightIconImageModify(enemy, enemy.position, stun_img, 695)
+    
+    def DisplayCharacterIntention(self, character_name, action_name, targets):
+        self.screen.fill(self.BLACK)
+        self.DisplayCurrentFrame()
         
-    def DrawAllCharacters(self):
+        if isinstance(action_name, str):
+            action_name_str = action_name
+        else:
+            action_name_str = action_name.name
+            
+        if isinstance(action_name, Attacks):
+            targets = action_name.target_position if action_name.is_multi_target else targets
+        
+        intention_text = self.intention_font.render(f"{character_name} used {action_name_str} on positions: {targets}", True, (255, 255, 0))
+        text_pos = ((self.screen_width * (1/5)), (self.screen_height * (1/4)))
+        self.screen.blit(intention_text, text_pos)
+        pygame.display.flip()
+        
+    def DisplayAllCharacters(self):
         self.screen.fill(self.BLACK)
         
         # This function will draw all characters in the grid in idle state.
@@ -79,7 +122,7 @@ class SimulationVisuals():
         
         for position, enemy in grid.enemygrid_dict.items():
             health_text = self.font.render(f"HP: {enemy.health}/{enemy.max_health}", True, (255, 255, 255))
-            text_pos = ((600 + ((position - 1) * self.position_offset_x)) + enemy.offset[0], 600 + enemy.text_offset[1])
+            text_pos = ((650 + ((position - 1) * self.position_offset_x)) + enemy.offset[0], 600 + enemy.text_offset[1])
             self.screen.blit(health_text, text_pos)
     
     def ApplyImageModify(self, hero, position_id, image):
@@ -90,6 +133,10 @@ class SimulationVisuals():
         image = pygame.transform.scale(image, (enemy.scale))
         flipped_image = pygame.transform.flip(image, True, False)
         self.screen.blit(flipped_image, ((600 + ((position_id - 1) * self.position_offset_x)) + enemy.offset[0], 150 + enemy.offset[1]))
+    
+    def ApplyRightIconImageModify(self, enemy, position_id, icon, initial_x):
+        upscale_icon = pygame.transform.scale(icon, (30, 30))
+        self.screen.blit(upscale_icon, ((initial_x + ((position_id - 1) * self.effect_icon_offset_x)) + enemy.offset[0], enemy.offset[1] + 450))
     
     def VisualPause(self):
         paused = True

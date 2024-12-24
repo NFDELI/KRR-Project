@@ -14,6 +14,7 @@ class Corpse(Character):
         self.offset = (0, 300)
         self.scale = (150, 100)
         self.text_offset = (0, 0)
+        self.name = "Corpse"
 
     def Decompose(self):
         if(self.decay_counter > 4):
