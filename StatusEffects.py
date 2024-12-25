@@ -9,17 +9,6 @@ class StatusEffects:
         self.effect_type = effect_type
         self.apply_chance = apply_chance
     
-    def AddEffect(self, target):
-        if(self.name == "Stun"):
-            target.is_stunned = True
-            print(f"{target.__class__.__name__} is stunned for {self.duration} turn(s)!")
-        elif(self.name == "Bleed"):
-            target.is_bleeding = True
-            print(f"{target.__class__.__name__} is bleeding with damage of {self.effect_value} for {self.duration} turn(s)!")
-        elif(self.name == "Blight"):
-            target.is_blighted = True
-            print(f"{target.__class__.__name__} is blighted with damage of {self.effect_value} for {self.duration} turn(s)!")
-    
     def RemoveEffect(self, target):
 
         # x could be self.name variable
@@ -43,6 +32,7 @@ class StatusEffects:
         
         if operation  == "reset":
             setattr(target, attribute_name, getattr(target, reset_value) if reset_value else False)
+            print(f"{attribute_name} has been reset into {reset_value}!")
         elif operation == "+=":
             setattr(target, attribute_name, getattr(target, attribute_name) + self.effect_value)
         elif operation == "-=":

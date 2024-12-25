@@ -29,8 +29,7 @@ class Crusader(Character):
         self.actions_dict['zealous_accusation'] = zealous_accusation
         # self.actions_dict['bulwark_of_faith'] = bulwark_of_faith
         # self.actions_dict['inspiring_cry'] = inspiring_cry
-        
-        # This action is only used for DEBUGGING!
+        # This action is only used when the character cannot do any other action. (Usually due to mispositioning)
         nothing = Attacks((1, 2, 3, 4), (1,), [], 0, (0, 0), 0, is_unlimited = True)
         self.actions_dict['nothing'] = nothing
         
@@ -45,13 +44,8 @@ class Crusader(Character):
         self.text_offset = (0, 0)
 
         self.name = "Crusader"
-    # MUST RETURN ACTION NAME AND TARGET!!
+
     def GetAction(self, every_grid):
-        # How do I call GetAction of the Parent Character class?
-        # parent_action = super().GetAction(every_grid)
-        # return parent_action
-        
-        # parent_action = self.policies.HighestDamageOutputPolicy(every_grid.enemygrid_dict)
         parent_action = self.policies.BestActionPolicy(every_grid.herogrid_dict, every_grid.enemygrid_dict)
         return parent_action
     

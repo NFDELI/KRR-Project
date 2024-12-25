@@ -42,7 +42,6 @@ class Vestal(Character):
         self.text_offset = (0, 0)
         self.name = "Vestal"
         
-        # This action is only used for DEBUGGING!
         nothing = Attacks((1, 2, 3, 4), (1,), [], 0, (0, 0), 0, is_unlimited = True)
         self.actions_dict['nothing'] = nothing
         

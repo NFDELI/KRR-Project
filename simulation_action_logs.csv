@@ -1,0 +1,35 @@
+Caster,Caster Rank,Targets,Target Ranks,Action,Damage/Heal,Hit Success,Total DOT/Cure Value,Total Damage/Heal,Death Blow/Prevent,Simulation ID
+Fusilier,4,"['Crusader', 'HighwayMan', 'PlagueDoctor', 'Vestal']","[1, 2, 3, 4]",blanket_fire,"[3, 1, 1, 3]","[True, True, True, True]","[0, 0, 0, 0]",8,"[False, False, False, False]",1
+PlagueDoctor,3,"['Fusilier', 'Fusilier']","[3, 4]",Blinding_Grenade,"[0, 0]","[True, True]","[0, 0]",0,"[False, False]",1
+HighwayMan,2,"['Cutthroat', 'Cutthroat', 'Fusilier']","[1, 2, 3]",Grape_Shot_Blast,"[3, 3, 5]","[True, True, True]","[0, 0, 0]",11,"[False, False, False]",1
+Cutthroat,2,"['Crusader', 'HighwayMan']","[1, 2]",Slice and Dice,"[5, 4]","[True, True]","[0, 0]",9,"[False, False]",1
+Vestal,4,"['Crusader', 'HighwayMan', 'PlagueDoctor', 'Vestal']","[1, 2, 3, 4]",Divine_Comfort,"[3, 1, 0, 0]","[True, True, True, True]","[0, 0, 0, 0]",4,"[False, False, False, False]",1
+Fusilier,3,"['Crusader', 'HighwayMan', 'PlagueDoctor', 'Vestal']","[1, 2, 3, 4]",blanket_fire,"[2, 3, 2, 1]","[True, True, True, True]","[0, 0, 0, 0]",8,"[False, False, False, False]",1
+Cutthroat,1,"['Crusader', 'HighwayMan']","[1, 2]",Slice and Dice,"[5, 5]","[True, True]","[0, 0]",10,"[False, False]",1
+Crusader,1,['Cutthroat'],[2],Stunning_Blow,[2],[True],[0],2,[False],1
+Fusilier,4,"['Crusader', 'HighwayMan', 'PlagueDoctor', 'Vestal']","[1, 2, 3, 4]",blanket_fire,"[1, 1, 3, 2]","[True, True, True, True]","[0, 0, 0, 0]",7,"[False, False, False, False]",1
+Fusilier,3,"['Crusader', 'HighwayMan', 'PlagueDoctor', 'Vestal']","[1, 2, 3, 4]",blanket_fire,"[2, 1, 3, 2]","[True, True, True, True]","[0, 0, 0, 0]",8,"[False, False, False, False]",1
+Cutthroat,2,"['Crusader', 'HighwayMan']","[1, 2]",Slice and Dice,"[3, 4]","[True, True]","[0, 0]",7,"[False, False]",1
+PlagueDoctor,3,['Cutthroat'],[1],Noxious_Blast,[0],[True],[15],15,[False],1
+Vestal,4,"['Crusader', 'HighwayMan', 'PlagueDoctor', 'Vestal']","[1, 2, 3, 4]",Divine_Comfort,"[2, 1, 3, 2]","[True, True, True, True]","[0, 0, 0, 0]",8,"[False, False, False, False]",1
+Crusader,1,['Cutthroat'],[1],Stunning_Blow,[2],[True],[0],2,[False],1
+HighwayMan,2,['Cutthroat'],[1],Open_Vein,[6],[True],[0],6,[False],1
+PlagueDoctor,3,"['Fusilier', 'Fusilier']","[3, 4]",Blinding_Grenade,"[0, 0]","[True, True]","[0, 0]",0,"[False, False]",1
+HighwayMan,2,['Cutthroat'],[2],Open_Vein,[5],[True],[6],11,[False],1
+Crusader,1,['Cutthroat'],[2],Stunning_Blow,[2],[True],[0],2,[True],1
+Vestal,4,"['Crusader', 'HighwayMan', 'PlagueDoctor', 'Vestal']","[1, 2, 3, 4]",Divine_Comfort,"[1, 3, 2, 1]","[True, True, True, True]","[0, 0, 0, 0]",7,"[False, False, False, False]",1
+PlagueDoctor,3,"['Fusilier', 'Fusilier']","[3, 4]",Blinding_Grenade,"[0, 0]","[True, True]","[0, 0]",0,"[False, False]",1
+Vestal,4,"['Crusader', 'HighwayMan', 'PlagueDoctor', 'Vestal']","[1, 2, 3, 4]",Divine_Comfort,"[3, 1, 0, 0]","[True, True, True, True]","[0, 0, 0, 0]",4,"[False, False, False, False]",1
+Fusilier,3,"['Crusader', 'HighwayMan', 'PlagueDoctor', 'Vestal']","[1, 2, 3, 4]",blanket_fire,"[3, 1, 1, 1]","[True, True, True, True]","[0, 0, 0, 0]",6,"[False, False, False, False]",1
+HighwayMan,2,['Fusilier'],[4],Pistol_Shot,[6],[True],[0],6,[False],1
+Fusilier,4,"['Crusader', 'HighwayMan', 'PlagueDoctor', 'Vestal']","[1, 2, 3, 4]",blanket_fire,"[2, 2, 3, 2]","[True, True, True, True]","[0, 0, 0, 0]",9,"[False, False, False, False]",1
+Crusader,1,['Corpse'],[2],Stunning_Blow,[3],[True],[0],3,[False],1
+Fusilier,3,"['Crusader', 'HighwayMan', 'PlagueDoctor', 'Vestal']","[1, 2, 3, 4]",blanket_fire,"[3, 2, 1, 2]","[True, True, True, True]","[0, 0, 0, 0]",8,"[False, False, False, False]",1
+HighwayMan,2,['Fusilier'],[4],Pistol_Shot,[6],[True],[0],6,[True],1
+PlagueDoctor,3,"['Fusilier', 'Corpse']","[3, 4]",Blinding_Grenade,"[0, 0]","[True, True]","[0, 0]",0,"[False, False]",1
+Vestal,4,"['Crusader', 'HighwayMan', 'PlagueDoctor', 'Vestal']","[1, 2, 3, 4]",Divine_Comfort,"[3, 3, 2, 2]","[True, True, True, True]","[0, 0, 0, 0]",10,"[False, False, False, False]",1
+Crusader,1,['Corpse'],[1],Stunning_Blow,[3],[True],[0],3,[False],1
+HighwayMan,2,['Fusilier'],[3],Pistol_Shot,[6],[True],[0],6,[False],1
+PlagueDoctor,3,"['Fusilier', 'Corpse']","[3, 4]",Plague_Grenade,"[0, 0]","[True, True]","[0, 12]",12,"[False, False]",1
+Vestal,4,"['Crusader', 'HighwayMan', 'PlagueDoctor', 'Vestal']","[1, 2, 3, 4]",Divine_Comfort,"[1, 1, 1, 0]","[True, True, True, True]","[0, 0, 0, 0]",3,"[False, False, False, False]",1
+Crusader,1,"['Corpse', 'Fusilier']","[1, 2]",Zealous_Accusation,"[6, 7]","[True, True]","[0, 0]",13,"[True, True]",1

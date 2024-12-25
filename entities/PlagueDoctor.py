@@ -30,7 +30,7 @@ class PlagueDoctor(Character):
         self.actions_dict["blinding_gas"] = blinding_gas
         self.actions_dict["battlefield_medicine"] = battlefield_medicine
 
-        # This action is only used for DEBUGGING!
+        # This action is only used when the character cannot do any other action. (Usually due to mispositioning)
         nothing = Attacks((1, 2, 3, 4), (1,), [], 0, (0, 0), 0, is_unlimited = True, name = "Nothing")
         self.actions_dict['nothing'] = nothing
         

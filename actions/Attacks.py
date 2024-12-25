@@ -112,6 +112,7 @@ class Attacks(Actions):
                 if(isBleedSuccess):
                     chosen_target.status_effects.append(StatusEffects(effect.name, effect.duration, effect.apply_chance, effect.effect_value, effect.effect_type))
                     print(f"Bleed SUCCESS on {chosen_target.__class__.__name__}")
+                    chosen_target.is_bleeding = True
                     return effect.duration * effect.effect_value
                 else:
                     print(f"Bleed FAILED on {chosen_target.__class__.__name__}")
@@ -125,6 +126,7 @@ class Attacks(Actions):
                     #chosen_target.status_effects.append(effect)
                     chosen_target.status_effects.append(StatusEffects(effect.name, effect.duration, effect.apply_chance, effect.effect_value, effect.effect_type))
                     print(f"Blight SUCCESS on {chosen_target.__class__.__name__}")
+                    chosen_target.is_blighted = True
                     return effect.duration * effect.effect_value
                 else:
                     print(f"Blight FAILED on {chosen_target.__class__.__name__}")

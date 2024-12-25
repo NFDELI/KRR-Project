@@ -12,9 +12,11 @@ from entities.Corpse import Corpse
 from visuals.PyGameVisuals import SimulationVisuals
 import random
 from collections import deque
-from StatusEffects import StatusEffects
 import pandas as pd
+from pandasgui import show
 import globals
+
+from StatusEffects import StatusEffects
 
 class Grid():
     def __init__(self, herogrid, enemygrid):
@@ -85,6 +87,7 @@ class PolicyEvaluator:
             
         percentage_score = (total_health / grid.total_hero_max_health) * 100
         print(f"Health Score is {total_health}/{grid.total_hero_max_health}: {round(percentage_score, 2)}%")
+        return round(percentage_score, 2)
          
     # This function is called when evaluating the total health that each hero has at the end of the simulation.
     def GetTotalHeroTeamHealth(self, hero_grid):
@@ -127,37 +130,6 @@ def GenerateNextRound(herogrid_dict, enemygrid_dict, grid):
     initiative_queue = deque(sorted(initiative_queue, key=lambda Character: Character.initiative, reverse=True))
     return initiative_queue
 
-def LoadBestStrategy(Crusader, HighwayMan, PlagueDoctor, Vestal):
-    # Crusader has high single target damage and has a stun. (Mainly targets Front Ranks and Crusader is a Tank)
-    # HighwayMan has good damage and can target multiple enemies. (Can Target Back Ranks)
-    # PlagueDoctor can Deal a lot of Damage Over Time, stun, cure (heal DOTs) and attack the back ranks of enemies.
-    # Vestal can Heal, Stun, and Damage single targets at the back ranks
-    
-    # Function format: SetPolicyWeights(self, kill = 0, stun = 0, turn = 0, rank = 0, health = 0, death = 0, heal = 0):
-    
-    Crusader.policies.SetPolicyWeights(kill = 10, turn = 9, stun = 8, health = 7, damage = 6)
-    HighwayMan.policies.SetPolicyWeights(kill = 10, turn = 9, rank = 8, health = 7, damage = 6)
-    PlagueDoctor.policies.SetPolicyWeights(death = 11, kill = 10, cure = 9, rank = 8, damage = 7, stun = 6, health = 5)
-    Vestal.policies.SetPolicyWeights(death = 11, stun = 10, turn = 9, rank = 8, heal = 7, health = 6, kill = 5)
-    
-def LoadHealthFocusStrategy(Crusader, HighwayMan, PlagueDoctor, Vestal):
-    Crusader.policies.SetPolicyWeights(stun = 10, turn = 9, health = 8, kill = 6)
-    HighwayMan.policies.SetPolicyWeights(kill = 10, turn = 9, rank = 8, health = 7)
-    PlagueDoctor.policies.SetPolicyWeights(death = 11, cure = 10, turn = 9, stun = 8, rank = 7, kill = 6)
-    Vestal.policies.SetPolicyWeights(death = 11, heal = 10, turn = 9, kill = 7, stun = 6)
-
-def LoadDamageFocusStrategy(Crusader, HighwayMan, PlagueDoctor, Vestal):
-    Crusader.policies.SetPolicyWeights(kill = 10, damage = 9, health = 8)
-    HighwayMan.policies.SetPolicyWeights(kill = 10, damage = 9, health = 8)
-    PlagueDoctor.policies.SetPolicyWeights(kill = 10, damage = 9, health = 8)
-    Vestal.policies.SetPolicyWeights(kill = 10, damage = 9, health = 8)
-    
-def LoadBackRankFocusStrategy(Crusader, HighwayMan, PlagueDoctor, Vestal):
-    Crusader.policies.SetPolicyWeights(kill = 10, rank = 9, stun = 8, damage = 7, health = 6)
-    HighwayMan.policies.SetPolicyWeights(kill = 10, rank = 9, turn = 8, health = 7, damage = 6)
-    PlagueDoctor.policies.SetPolicyWeights(death = 11, kill = 10, rank = 9, damage = 8, health = 7, cure = 6)
-    Vestal.policies.SetPolicyWeights(death = 11, kill = 10, rank = 9, stun = 8, turn = 7, heal = 6)
-
 def CreateDataFrame(data):
     # Prepare a list of rows.
     rows = []
@@ -198,19 +170,14 @@ def CreateDataFrame(data):
     # Display the DataFrame
     if globals.show_data_frame:
         print(df)
+    return df
 
-def main():
-    
+def RunSimulation(simulation_id):
     # Heroes
     Reynald = Crusader(position = 1)
     Dismas = HighwayMan(position = 2)
     Paracelsus = PlagueDoctor(position = 3)
     Junia = Vestal(position = 4)
-    
-    # Reynald.health = 1
-    # Dismas.health = 1
-    # Paracelsus.health = 1
-    # Junia.health = 1
     
     # Enemies
     Mald = Cutthroat(position = 1)
@@ -218,16 +185,8 @@ def main():
     Axel = Fusilier(position = 3)
     Miguel = Fusilier(position = 4)
     
-    # Mald.status_effects.append(StatusEffects("Stun", 1, 1.0, 1, "stun"))
-    # Axel.status_effects.append(StatusEffects("Stun", 1, 1.0, 1, "stun"))
-    # Carlos.status_effects.append(StatusEffects("Stun", 1, 1.0, 1, "stun"))
-    
-    #LoadBestStrategy(Reynald, Dismas, Paracelsus, Junia)
-    #LoadHealthFocusStrategy(Reynald, Dismas, Paracelsus, Junia)
-    LoadDamageFocusStrategy(Reynald, Dismas, Paracelsus, Junia)
-    
-    #TEST STRESS SKELETONS
-    Quary = BoneCourtier(position = 3)
+    # Load Hero Strategy here:
+    globals.hero_strategy(Reynald, Dismas, Paracelsus, Junia)
     
     herogrid_dict = {
         Reynald.position : Reynald,
@@ -245,7 +204,8 @@ def main():
     
     grid = Grid(herogrid_dict, enemygrid_dict)
     policy_evaluator = PolicyEvaluator()
-    simulation_visuals = SimulationVisuals(grid, policy_evaluator)
+    if globals.show_visuals:
+        simulation_visuals = SimulationVisuals(grid, policy_evaluator)
     
     # Assign team and enemy grids for heroes
     heroes = [Reynald, Dismas, Paracelsus, Junia]
@@ -254,196 +214,117 @@ def main():
         hero.enemy_grid = grid.enemygrid_dict
 
     # Assign team and enemy grids for enemies
-    enemies = [Mald, Axel, Carlos, Miguel, Quary]
+    enemies = [Mald, Axel, Carlos, Miguel]
     
     for enemy in enemies:
         enemy.team_grid = grid.enemygrid_dict
         enemy.enemy_grid = grid.herogrid_dict
     
-    # simulation_visuals.run()
     # Simulation Starts here!
     while(grid.herogrid_dict and (not all_values_of_class(grid.enemygrid_dict, Corpse) and grid.round_counter < 50)):
-        
-        print(f"==========Hero Team=============")
-        for key, value in grid.herogrid_dict.items():
-            print(f"Position Key: {key}, Value: {value.__class__.__name__}, Health: {value.health}, Stunned: {value.is_stunned}")
-        print("\n\n")
-        print(f"==========Enemy Team=============")
-        
-        for key, value in grid.enemygrid_dict.items():
-            
-            print(f"Position Key: {key}, Value: {value.__class__.__name__}, Health: {value.health}, Stunned: {value.is_stunned}")
-        print("\n\n")
-        
         if globals.show_visuals:
             simulation_visuals.DisplayCurrentFrame()
             simulation_visuals.VisualPause()
-        
         turn_order = GenerateNextRound(grid.herogrid_dict, grid.enemygrid_dict, grid)
-        
+
         # Display Turn Order
         # for i, character in enumerate(turn_order, start = 1):
         #     print(f"{i}: {character.__class__.__name__} with initiative {character.initiative}")
-        
+    
         while turn_order:
             if (not grid.herogrid_dict or (all_values_of_class(grid.enemygrid_dict, Corpse) or not grid.enemygrid_dict)):
                 break
             character_to_act = turn_order.popleft()
             character_decision, character_target, target_grid = character_to_act.GetAction(grid)
             
+            stunned_result = character_to_act.is_stunned
+            
             # Display Character Action and Target Intention
             if globals.show_visuals:
-                simulation_visuals.DisplayCharacterIntention(character_to_act, character_decision, character_target.position)
+                simulation_visuals.DisplayCharacterIntention(character_to_act, character_decision, character_target.position, stunned_result)
                 simulation_visuals.VisualPause()
             
             character_to_act.DoAction(character_decision, target_grid[character_target.position], target_grid, policy_evaluator)
+            if globals.show_visuals:
+                simulation_visuals.DisplayCurrentFrame()
+                
             character_to_act.has_taken_action = True
             print("\n")
-        
-        print("TURN ORDER FINISHED")
         # Evaluate Each Round's Score
         policy_evaluator.EvaluateRound()
         
-    print("====================================================")
-    print(f"Simulation Ended with {grid.round_counter} rounds!")
-    print(f"Total Fight Score {policy_evaluator.EvaluateRound()}!")
-    print("====================================================")
+    total_rounds = grid.round_counter
+    fight_score = policy_evaluator.EvaluateRound() 
+    health_score = policy_evaluator.EvaluateHealthScore(grid)
     
-    # Show Remaining Hp Left.
-    for value in grid.herogrid_dict.values():
-        print(f"{value.__class__.__name__} has {value.health} hp left!")
-    
-    policy_evaluator.EvaluateHealthScore(grid)
-    
-    # Display Action Log
-    if globals.show_data_frame:
-        CreateDataFrame(policy_evaluator.actions_log)  
+    # Create the action log DataFrame
+    action_log_df = CreateDataFrame(policy_evaluator.actions_log)  # Ensure this returns a DataFrame
+    action_log_df["Simulation ID"] = simulation_id  # Tag action logs with the simulation ID
 
-def MyTest():
-    # Heroes
-    Reynald = Crusader(position = 1)
-    Dismas = HighwayMan(position = 2) # Change this back to 2 later!
-    Paracelsus = PlagueDoctor(position = 3) # Change this back to 3 later!
-    Junia = Vestal(position = 4)
-    
-    Junia.policies.SetPolicyWeights(death = 11, stun = 10, turn = 9, rank = 8, heal = 7, kill = 6, health = 5)
-    Paracelsus.policies.SetPolicyWeights(death = 11, cure = 10, stun = 9, turn = 8, rank = 7, kill = 6, health = 5, heal = 4)
-    Reynald.policies.SetPolicyWeights(stun = 10, turn = 9, health = 8, kill = 6)
-    
-    #Reynald.health = 3
-    
-    # Reynald.status_effects.append(StatusEffects("Bleed", 3, 100.0, 1, "dot"))
-    Dismas.status_effects.append(StatusEffects("Bleed", 3, 100.0, 8, "dot"))
-    Dismas.status_effects.append(StatusEffects("Bleed", 3, 100.0, 1, "dot"))
-    Dismas.status_effects.append(StatusEffects("Bleed", 3, 100.0, 1, "dot"))
-    
-    Dismas.health = 3
-    Paracelsus.health = 3
-    Junia.health = 1
-
-    
-    # Enemies
-    Mald = Cutthroat(position = 1)
-    Axel = Fusilier(position = 2)
-    Carlos = Cutthroat(position = 3)
-    Miguel = Fusilier(position = 4)
-    
-    #TEST STRESS SKELETONS
-    Quary = BoneCourtier(position = 3)
-    
-    herogrid_dict = {
-        Reynald.position : Reynald,
-        Dismas.position : Dismas,
-        Paracelsus.position : Paracelsus,
-        Junia.position : Junia
+    # Return simulation results and action logs
+    return {
+        "Rounds": total_rounds,
+        "Fight Score": fight_score,
+        "Health Score": health_score,
+        "Action Log": action_log_df,
     }
     
-    enemygrid_dict = {
-        Mald.position : Mald,
-        Axel.position : Axel,
-        Carlos.position : Carlos,
-        Miguel.position : Miguel,
-        # Quary.position: Quary
+def BatchSimulations(num_simulations = 1):
+    results = []
+    all_action_logs = []
+
+    for i in range(num_simulations):
+        print(f"Running simulation {i + 1}/{num_simulations}...")
+        simulation_result = RunSimulation(simulation_id=i + 1)
+        
+        # Append summary results
+        results.append({
+            "Simulation ID": i + 1,
+            "Rounds": simulation_result["Rounds"],
+            "Fight Score": simulation_result["Fight Score"],
+            "Health Score": simulation_result["Health Score"],
+        })
+        
+        # Append detailed action logs
+        all_action_logs.append(simulation_result["Action Log"])
+
+    # Convert results to a summary DataFrame
+    results_df = pd.DataFrame(results)
+
+    # Combine all action logs into a single DataFrame
+    action_logs_df = pd.concat(all_action_logs, ignore_index = True)
+
+    # Save results and logs to CSV (Files are overwritten at each run)
+    results_df.to_csv("simulation_summary_results.csv", index = False, mode = 'w')
+    action_logs_df.to_csv("simulation_action_logs.csv", index = False, mode = 'w')
+    
+    return results_df, action_logs_df
+
+if __name__ == "__main__":
+    # Define the number of simulations
+    num_simulations = globals.number_of_simulations
+    summary_df, action_logs_df = BatchSimulations(num_simulations)
+    
+    # Print or save results
+    print("Summary Results:")
+    print(summary_df.head())
+    print("\nDetailed Action Logs:")
+    print(action_logs_df.head())
+    
+    action_logs_df = pd.read_csv("simulation_action_logs.csv")
+    summary_df = pd.read_csv("simulation_summary_results.csv")
+    
+    # Calculate average health score of all simulation
+    average_health_score = summary_df["Health Score"].mean()
+    average_fight_score = summary_df["Fight Score"].mean()
+    average_rounds = summary_df["Rounds"].mean()
+    
+    summary_row = {
+        "Simulation ID": "Average",
+        "Rounds": average_rounds,
+        "Fight Score": average_fight_score,
+        "Health Score": average_health_score,
     }
+    summary_df = pd.concat([summary_df, pd.DataFrame([summary_row])], ignore_index=True)
     
-    grid = Grid(herogrid_dict, enemygrid_dict)
-    policy_evaluator = PolicyEvaluator()
-    
-    # Assign team and enemy grids for heroes
-    heroes = [Reynald, Dismas, Paracelsus, Junia]
-    for hero in heroes:
-        hero.team_grid = grid.herogrid_dict
-        hero.enemy_grid = grid.enemygrid_dict
-
-    # Assign team and enemy grids for enemies
-    enemies = [Mald, Axel, Carlos, Miguel, Quary]
-    for enemy in enemies:
-        enemy.team_grid = grid.enemygrid_dict
-        enemy.enemy_grid = grid.herogrid_dict
-    
-    print("ROUND 1")
-    print("=================================================================================")
-    character_decision, character_target, target_grid = grid.herogrid_dict[3].GetAction(grid)
-    grid.herogrid_dict[3].DoAction(character_decision, target_grid[character_target.position], target_grid, policy_evaluator)
-    print(policy_evaluator.actions_log)
-    
-    # character_decision, character_target, target_grid = grid.herogrid_dict[1].GetAction(grid)
-    # grid.herogrid_dict[1].DoAction(character_decision, target_grid[character_target.position], target_grid, policy_evaluator)
-    
-    # character_decision, character_target, target_grid = grid.herogrid_dict[1].GetAction(grid)
-    # grid.herogrid_dict[1].DoAction(character_decision, target_grid[character_target.position], target_grid, policy_evaluator)
-    
-    # character_decision, character_target, target_grid = grid.herogrid_dict[1].GetAction(grid)
-    # grid.herogrid_dict[1].DoAction(character_decision, target_grid[character_target.position], target_grid, policy_evaluator)
-    print("=================================================================================")
-    # print("=================================================================================")
-    # print("ROUND 2\n")
-    # grid.enemygrid_dict[1].DoAction("shank", grid.herogrid_dict[1], grid.enemygrid_dict)
-    # grid.herogrid_dict[1].DoAction("nothing", grid.enemygrid_dict[1], grid.enemygrid_dict)
-    # print("=================================================================================")
-    # print("=================================================================================")
-    # print("ROUND 3\n")
-    # grid.enemygrid_dict[1].DoAction("shank", grid.herogrid_dict[1], grid.enemygrid_dict)
-    # grid.herogrid_dict[1].DoAction("nothing", grid.enemygrid_dict[1], grid.enemygrid_dict)
-    # print("=================================================================================")
-    # print("=================================================================================")
-    # print("ROUND 4\n")
-    # grid.herogrid_dict[3].DoAction("battlefield_medicine", grid.herogrid_dict[1], grid.herogrid_dict)
-    # grid.enemygrid_dict[1].DoAction("nothing", grid.herogrid_dict[1], grid.enemygrid_dict)
-    # print("=================================================================================")
-    # print("=================================================================================")
-    # print("ROUND 5\n")
-    # grid.herogrid_dict[1].DoAction("nothing", grid.herogrid_dict[1], grid.herogrid_dict)
-    # #grid.enemygrid_dict[1].DoAction("nothing", grid.herogrid_dict[1], grid.enemygrid_dict)
-    # print("=================================================================================")
-
-
-    # Effect = lambda : Crusader(position = 1)
-    # Other = Effect()
-    # print(Other.health)
-    CreateDataFrame(policy_evaluator.actions_log)
-
-main()
-
-
-# TODO:
-# Add Policy/Strategies for each hero (Make unique tunable parameters for each hero)
-# Add Policy Evaluation (Need to Add Evaluation for Entering Death's Door and Killing Heroes or Enemies)
-# Need to Add different alternative policies to test performance of policy.
-
-#TODO:
-"""
-1. Consider Actions that can kill multiple targets at once. (Need to be Tested) (IDK)
-2. Consider Blight or Bleed that can kill targets that havent taken their turn. (Ok)
-3. Consider Hitting Corpses if their is not targets available. (Next Priority) 
-4. Consider healing teamates if they have blight or bleed or low hp instead of attacking.
-
-BUG:
-1. Crusader Never stuns an enemy, he always use Zealous accusation, maybe I need to value stun even more!.
-"""
-
-"""
-BUGFIX:
-1. Fixed bug about how status effects are not processed properly, blight and bleed, etc... (NEED TO REFACTOR POLICY CODE)
-2. Applied the same technique of iterating through a copy of the list for curing (battlefield medicine) to remove bleed and blight!
-"""
+    show(action_logs = action_logs_df, summary = summary_df)

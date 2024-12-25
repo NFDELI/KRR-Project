@@ -116,7 +116,7 @@ class Character:
         # Check if character stunned.
         if(self.is_stunned):
             print(f"{self.__class__.__name__}'s turn is skipped from being stunned!")
-            #self.is_stunned = False
+            self.is_stunned = False
             self.ReduceStatusEffectsDuration(effect)
             
             # Used to trigger the remove +stun res
@@ -135,9 +135,6 @@ class Character:
         return True
     
     def ReduceStatusEffectsDuration(self, effect):
-        # print(f"Processing effect: {effect.name}, Duration: {effect.duration}")
-        # print(f"Effect ID: {id(effect)}, Name: {effect.name}, Duration: {effect.duration}")
-        # print("\n")
         effect.duration -= 1
         if effect.duration <= 0:
             # Properly remove only the expired effect
@@ -199,10 +196,6 @@ class Character:
         if(self.team_grid.get(self.position + move_amount)):
             self.team_grid[self.position + move_amount].position = self.position
             self.position += move_amount
-            
-        #else:
-            # Person not found at that empty spot.
-            #self.position += move_amount
 
         # Prevent Characters moving over the limit.
         if self.position > 4:
@@ -256,16 +249,13 @@ class Character:
                 if targets in grid_target:
                     targets_data.append(grid_target[targets])
                     result = chosen_action.DoAction(self, grid_target[targets], policy_evaluator)
-                    # if targets in grid_target:
                     results_data.append(result)
-                        #print(f"{self.__class__.__name__} used action: {action_name_str}! \n")
                     
             policy_evaluator.UpdateCharacterActionLog(self, targets_data, action_name_str, results_data)
         else:
             result = chosen_action.DoAction(self, chosen_target, policy_evaluator)
             print(f"Result is: {result}")
-            policy_evaluator.UpdateCharacterActionLog(self, [chosen_target], action_name_str, [result])
-            #print(f"{self.__class__.__name__} used action: {action_name_str}! \n")    
+            policy_evaluator.UpdateCharacterActionLog(self, [chosen_target], action_name_str, [result]) 
     
     def CharacterDies(self):
         # Make sure that corpse Disappears when hp of Corpse go to 0.
@@ -305,7 +295,7 @@ class Character:
         
         update_positions(self.team_grid)
 
-    # The goal of this function is to make a generalized Get Action for everyone.
+    # The goal of this function is to make a generalized Get Action for everyone. (Only Used if GetAction is not implemented on Character)
     def GetAction(self, every_grid):
         return self.RandomTargetPolicy(every_grid)
         

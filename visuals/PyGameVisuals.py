@@ -69,19 +69,30 @@ class SimulationVisuals():
     
     def DisplayCharacterStatusEffects(self):
         grid = self.grid
+        
+        for position, hero in grid.herogrid_dict.items():
+            if hero.is_bleeding:
+                bleed_img = pygame.image.load(self.bleed_icon)
+                self.ApplyIconImageModify(hero, hero.position, bleed_img, 445)
+            if hero.is_blighted:
+                blight_img = pygame.image.load(self.blight_icon)
+                self.ApplyIconImageModify(hero, hero.position, blight_img, 470)
+            if hero.is_stunned:
+                stun_img = pygame.image.load(self.stun_icon)
+                self.ApplyIconImageModify(hero, hero.position, stun_img, 495)
+        
         for position, enemy in grid.enemygrid_dict.items():
-            for effect in enemy.status_effects:
-                if "Bleed" in effect.name:
-                    bleed_img = pygame.image.load(self.bleed_icon)
-                    self.ApplyRightIconImageModify(enemy, enemy.position, bleed_img, 645)
-                if "Blight" in effect.name:
-                    blight_img = pygame.image.load(self.blight_icon)
-                    self.ApplyRightIconImageModify(enemy, enemy.position, blight_img, 670)
-                if "Stun" in effect.name:
-                    stun_img = pygame.image.load(self.stun_icon)
-                    self.ApplyRightIconImageModify(enemy, enemy.position, stun_img, 695)
+            if enemy.is_bleeding:
+                bleed_img = pygame.image.load(self.bleed_icon)
+                self.ApplyRightIconImageModify(enemy, enemy.position, bleed_img, 645)
+            if enemy.is_blighted:
+                blight_img = pygame.image.load(self.blight_icon)
+                self.ApplyRightIconImageModify(enemy, enemy.position, blight_img, 670)
+            if enemy.is_stunned:
+                stun_img = pygame.image.load(self.stun_icon)
+                self.ApplyRightIconImageModify(enemy, enemy.position, stun_img, 695)
     
-    def DisplayCharacterIntention(self, character, action_name, targets):
+    def DisplayCharacterIntention(self, character, action_name, targets, is_stunned = False):
         self.screen.fill(self.BLACK)
         self.DisplayCurrentFrame()
         
@@ -100,7 +111,10 @@ class SimulationVisuals():
             text_pos = ((self.screen_width * (1/11)), (self.screen_height * (1/6)))
             text_colour = (255, 255, 0)
         
-        intention_text = self.intention_font.render(f"{character.name}[{character.position}] used {action_name_str} on positions: {targets}", True, text_colour)
+        if not is_stunned:
+            intention_text = self.intention_font.render(f"{character.name}[{character.position}] used {action_name_str} on positions: {targets}", True, text_colour)
+        else:
+            intention_text = self.intention_font.render(f"{character.name}[{character.position}]'s turn is Skipped due to Stun or Death!", True, (255, 165, 0))
         
         self.screen.blit(intention_text, text_pos)
         pygame.display.flip()
@@ -141,6 +155,10 @@ class SimulationVisuals():
         flipped_image = pygame.transform.flip(image, True, False)
         self.screen.blit(flipped_image, ((600 + ((position_id - 1) * self.position_offset_x)) + enemy.offset[0], 150 + enemy.offset[1]))
     
+    def ApplyIconImageModify(self, hero, position_id, icon, initial_x):
+        upscale_icon = pygame.transform.scale(icon, (30, 30))
+        self.screen.blit(upscale_icon, ((initial_x - ((position_id - 1) * self.effect_icon_offset_x)) + hero.offset[0], hero.offset[1] + 450)) 
+    
     def ApplyRightIconImageModify(self, enemy, position_id, icon, initial_x):
         upscale_icon = pygame.transform.scale(icon, (30, 30))
         self.screen.blit(upscale_icon, ((initial_x + ((position_id - 1) * self.effect_icon_offset_x)) + enemy.offset[0], enemy.offset[1] + 450))
@@ -162,8 +180,6 @@ class SimulationVisuals():
         """Main game loop."""
         while self.running:
             self.handle_events()
-            # self.update()
-            # self.draw()
             self.clock.tick(self.fps)
 
         # Quit Pygame
