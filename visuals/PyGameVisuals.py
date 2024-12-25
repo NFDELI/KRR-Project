@@ -39,7 +39,7 @@ class SimulationVisuals():
         
         # Text Fonts
         self.font = pygame.font.Font(None, 24)
-        self.intention_font = pygame.font.Font(None, 28)
+        self.intention_font = pygame.font.Font(None, 24)
         
         # Status Effect Icons:
         self.stun_icon = "visuals/status_effect_icons/Stun.png"
@@ -81,7 +81,7 @@ class SimulationVisuals():
                     stun_img = pygame.image.load(self.stun_icon)
                     self.ApplyRightIconImageModify(enemy, enemy.position, stun_img, 695)
     
-    def DisplayCharacterIntention(self, character_name, action_name, targets):
+    def DisplayCharacterIntention(self, character, action_name, targets):
         self.screen.fill(self.BLACK)
         self.DisplayCurrentFrame()
         
@@ -93,8 +93,15 @@ class SimulationVisuals():
         if isinstance(action_name, Attacks):
             targets = action_name.target_position if action_name.is_multi_target else targets
         
-        intention_text = self.intention_font.render(f"{character_name} used {action_name_str} on positions: {targets}", True, (255, 255, 0))
-        text_pos = ((self.screen_width * (1/5)), (self.screen_height * (1/4)))
+        if not character.is_player:
+            text_pos = ((self.screen_width * (1/2)), (self.screen_height * (1/6)))
+            text_colour = (0, 0, 255)
+        else:
+            text_pos = ((self.screen_width * (1/11)), (self.screen_height * (1/6)))
+            text_colour = (255, 255, 0)
+        
+        intention_text = self.intention_font.render(f"{character.name}[{character.position}] used {action_name_str} on positions: {targets}", True, text_colour)
+        
         self.screen.blit(intention_text, text_pos)
         pygame.display.flip()
         

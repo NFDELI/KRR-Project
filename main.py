@@ -14,6 +14,7 @@ import random
 from collections import deque
 from StatusEffects import StatusEffects
 import pandas as pd
+import globals
 
 class Grid():
     def __init__(self, herogrid, enemygrid):
@@ -144,7 +145,13 @@ def LoadHealthFocusStrategy(Crusader, HighwayMan, PlagueDoctor, Vestal):
     HighwayMan.policies.SetPolicyWeights(kill = 10, turn = 9, rank = 8, health = 7)
     PlagueDoctor.policies.SetPolicyWeights(death = 11, cure = 10, turn = 9, stun = 8, rank = 7, kill = 6)
     Vestal.policies.SetPolicyWeights(death = 11, heal = 10, turn = 9, kill = 7, stun = 6)
-    
+
+def LoadDamageFocusStrategy(Crusader, HighwayMan, PlagueDoctor, Vestal):
+    Crusader.policies.SetPolicyWeights(kill = 10, health = 9)
+    HighwayMan.policies.SetPolicyWeights(kill = 10, health = 9)
+    PlagueDoctor.policies.SetPolicyWeights(kill = 10, health = 9)
+    Vestal.policies.SetPolicyWeights(kill = 10, health = 9)
+
 def CreateDataFrame(data):
     # Prepare a list of rows.
     rows = []
@@ -200,25 +207,26 @@ def main():
     
     # Enemies
     Mald = Cutthroat(position = 1)
-    Axel = Fusilier(position = 2)
-    Carlos = Cutthroat(position = 3)
+    Carlos = Cutthroat(position = 2)
+    Axel = Fusilier(position = 3)
     Miguel = Fusilier(position = 4)
     
-    Mald.status_effects.append(StatusEffects("Stun", 1, 1.0, 1, "stun"))
-    Axel.status_effects.append(StatusEffects("Stun", 1, 1.0, 1, "stun"))
-    Carlos.status_effects.append(StatusEffects("Stun", 1, 1.0, 1, "stun"))
+    # Mald.status_effects.append(StatusEffects("Stun", 1, 1.0, 1, "stun"))
+    # Axel.status_effects.append(StatusEffects("Stun", 1, 1.0, 1, "stun"))
+    # Carlos.status_effects.append(StatusEffects("Stun", 1, 1.0, 1, "stun"))
     
     #LoadBestStrategy(Reynald, Dismas, Paracelsus, Junia)
-    LoadHealthFocusStrategy(Reynald, Dismas, Paracelsus, Junia)
+    #LoadHealthFocusStrategy(Reynald, Dismas, Paracelsus, Junia)
+    LoadDamageFocusStrategy(Reynald, Dismas, Paracelsus, Junia)
     
     #TEST STRESS SKELETONS
     Quary = BoneCourtier(position = 3)
     
     herogrid_dict = {
         Reynald.position : Reynald,
-        # Dismas.position : Dismas,
-        # Paracelsus.position : Paracelsus,
-        # Junia.position : Junia
+        Dismas.position : Dismas,
+        Paracelsus.position : Paracelsus,
+        Junia.position : Junia
     }
     
     enemygrid_dict = {
@@ -260,8 +268,9 @@ def main():
             print(f"Position Key: {key}, Value: {value.__class__.__name__}, Health: {value.health}, Stunned: {value.is_stunned}")
         print("\n\n")
         
-        simulation_visuals.DisplayCurrentFrame()
-        simulation_visuals.VisualPause()
+        if globals.show_visuals:
+            simulation_visuals.DisplayCurrentFrame()
+            simulation_visuals.VisualPause()
         
         turn_order = GenerateNextRound(grid.herogrid_dict, grid.enemygrid_dict, grid)
         
@@ -276,8 +285,9 @@ def main():
             character_decision, character_target, target_grid = character_to_act.GetAction(grid)
             
             # Display Character Action and Target Intention
-            simulation_visuals.DisplayCharacterIntention(character_to_act.name, character_decision, character_target.position)
-            simulation_visuals.VisualPause()
+            if globals.show_visuals:
+                simulation_visuals.DisplayCharacterIntention(character_to_act, character_decision, character_target.position)
+                simulation_visuals.VisualPause()
             
             character_to_act.DoAction(character_decision, target_grid[character_target.position], target_grid, policy_evaluator)
             character_to_act.has_taken_action = True
@@ -287,7 +297,6 @@ def main():
         # Evaluate Each Round's Score
         policy_evaluator.EvaluateRound()
         
-    
     print("====================================================")
     print(f"Simulation Ended with {grid.round_counter} rounds!")
     print(f"Total Fight Score {policy_evaluator.EvaluateRound()}!")

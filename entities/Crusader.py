@@ -24,11 +24,11 @@ class Crusader(Character):
 
         inspiring_cry = Attacks((1, 2, 3, 4), (1, 2, 3, 4), [], 10.00, (0, 0), 0, True, stress_damage = -5, is_traget_friendly = True, name = "Inspiring_Cry")
         
-        # self.actions_dict['smite'] = smite
-        # self.actions_dict['stunning_blow'] = stunning_blow
-        # self.actions_dict['zealous_accusation'] = zealous_accusation
-        #self.actions_dict['bulwark_of_faith'] = bulwark_of_faith
-        #self.actions_dict['inspiring_cry'] = inspiring_cry
+        self.actions_dict['smite'] = smite
+        self.actions_dict['stunning_blow'] = stunning_blow
+        self.actions_dict['zealous_accusation'] = zealous_accusation
+        # self.actions_dict['bulwark_of_faith'] = bulwark_of_faith
+        # self.actions_dict['inspiring_cry'] = inspiring_cry
         
         # This action is only used for DEBUGGING!
         nothing = Attacks((1, 2, 3, 4), (1,), [], 0, (0, 0), 0, is_unlimited = True)

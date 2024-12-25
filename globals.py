@@ -1,1 +1,1 @@
-show_visuals = False
+show_visuals = True
