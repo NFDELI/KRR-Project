@@ -87,7 +87,7 @@ class Policies:
             for enemy in valid_targets:
                 # Single-Target Action
                 can_kill, can_stun, average_damage, total_damage = self.EvaluateTarget(action_value, enemy)
-                priority = self.CalculatePriority(can_kill, can_stun, enemy)
+                priority = self.CalculatePriority(can_kill, can_stun, enemy, total_damage)
                 heapq.heappush(attack_plan_priority, (priority, enemy, action_value))
         
         if attack_plan_priority:
@@ -138,7 +138,7 @@ class Policies:
                     can_kill, can_stun, average_damage, total_damage = self.EvaluateTarget(action_value, enemy)
                 
                     if can_kill or can_stun:
-                        priority = self.CalculatePriority(can_kill, can_stun, enemy)
+                        priority = self.CalculatePriority(can_kill, can_stun, enemy, total_damage)
                         heapq.heappush(attack_plan_priority, (priority, enemy, action_value))
         
         if attack_plan_priority:
@@ -194,7 +194,8 @@ class Policies:
                 (self.kill_weight, 0),
                 (self.stun_weight, 0),
                 (self.turn_weight, 0),
-                (self.rank_weight, 0)
+                (self.rank_weight, 0),
+                (self.damage_weight, 0)
             ]
             
             sorted_total_priorities = sorted(total_priorities, key = lambda x: x[0], reverse = True)
@@ -220,7 +221,8 @@ class Policies:
                     (self.kill_weight, 0),
                     (self.stun_weight, 0),
                     (self.turn_weight, 0),
-                    (self.rank_weight, 0)
+                    (self.rank_weight, 0),
+                    (self.damage_weight, 0)
                 ]
                 
                 sorted_priorites = sorted(priorities, key = lambda x: x[0], reverse = True)
@@ -267,17 +269,17 @@ class Policies:
         return dot_damage
 
     def CalculateMultiTargetPriority(self, action_value, valid_targets):
-        total_priorities = (0, 0, 0, 0, 0, 0, 0, 0) 
+        total_priorities = (0, 0, 0, 0, 0, 0, 0, 0, 0) 
     
         for enemy in valid_targets:
             can_kill, can_stun, average_damage, total_damage = self.EvaluateTarget(action_value, enemy)
-            priority = self.CalculatePriority(can_kill, can_stun, enemy)
+            priority = self.CalculatePriority(can_kill, can_stun, enemy, total_damage)
             total_priorities = tuple(a + b for a, b in zip(total_priorities, priority))
             #print(f"{total_priorities}\n")
         
         return total_priorities
 
-    def CalculatePriority(self, can_kill, can_stun, enemy):
+    def CalculatePriority(self, can_kill, can_stun, enemy, average_value):
         priorities = [
             (self.kill_weight, -1 if can_kill else 0),
             # Using a stun action while killing the enemy at the same time makes the stun have no value!   
@@ -287,6 +289,7 @@ class Policies:
             (self.rank_weight, -enemy.position),
             # Prioritise lower health enemies.
             (self.health_weight, -enemy.health),
+            (self.damage_weight, -average_value),
             (self.heal_weight, 0),
             (self.cure_weight, 0),
             (self.death_door_weight, 0)
@@ -300,6 +303,7 @@ class Policies:
         return result
 
     def EvaluateTarget(self, action_value, enemy):
+        dot_damage = 0
         average_damage = ((action_value.damage_range[0] + action_value.damage_range[1]) / 2) * (1 - enemy.protection)
         dot_damage = self.CalculateFirstTickDoT(action_value, enemy)
         total_damage = average_damage + dot_damage

@@ -135,9 +135,9 @@ def LoadBestStrategy(Crusader, HighwayMan, PlagueDoctor, Vestal):
     
     # Function format: SetPolicyWeights(self, kill = 0, stun = 0, turn = 0, rank = 0, health = 0, death = 0, heal = 0):
     
-    Crusader.policies.SetPolicyWeights(kill = 10, turn = 9, stun = 8, health = 7)
-    HighwayMan.policies.SetPolicyWeights(kill = 10, turn = 9, rank = 8, health = 7)
-    PlagueDoctor.policies.SetPolicyWeights(death = 11, kill = 10, turn = 9, rank = 8, heal = 6, health = 5)
+    Crusader.policies.SetPolicyWeights(kill = 10, turn = 9, stun = 8, health = 7, damage = 6)
+    HighwayMan.policies.SetPolicyWeights(kill = 10, turn = 9, rank = 8, health = 7, damage = 6)
+    PlagueDoctor.policies.SetPolicyWeights(death = 11, kill = 10, cure = 9, rank = 8, damage = 7, stun = 6, health = 5)
     Vestal.policies.SetPolicyWeights(death = 11, stun = 10, turn = 9, rank = 8, heal = 7, health = 6, kill = 5)
     
 def LoadHealthFocusStrategy(Crusader, HighwayMan, PlagueDoctor, Vestal):
@@ -147,10 +147,16 @@ def LoadHealthFocusStrategy(Crusader, HighwayMan, PlagueDoctor, Vestal):
     Vestal.policies.SetPolicyWeights(death = 11, heal = 10, turn = 9, kill = 7, stun = 6)
 
 def LoadDamageFocusStrategy(Crusader, HighwayMan, PlagueDoctor, Vestal):
-    Crusader.policies.SetPolicyWeights(kill = 10, health = 9)
-    HighwayMan.policies.SetPolicyWeights(kill = 10, health = 9)
-    PlagueDoctor.policies.SetPolicyWeights(kill = 10, health = 9)
-    Vestal.policies.SetPolicyWeights(kill = 10, health = 9)
+    Crusader.policies.SetPolicyWeights(kill = 10, damage = 9, health = 8)
+    HighwayMan.policies.SetPolicyWeights(kill = 10, damage = 9, health = 8)
+    PlagueDoctor.policies.SetPolicyWeights(kill = 10, damage = 9, health = 8)
+    Vestal.policies.SetPolicyWeights(kill = 10, damage = 9, health = 8)
+    
+def LoadBackRankFocusStrategy(Crusader, HighwayMan, PlagueDoctor, Vestal):
+    Crusader.policies.SetPolicyWeights(kill = 10, rank = 9, stun = 8, damage = 7, health = 6)
+    HighwayMan.policies.SetPolicyWeights(kill = 10, rank = 9, turn = 8, health = 7, damage = 6)
+    PlagueDoctor.policies.SetPolicyWeights(death = 11, kill = 10, rank = 9, damage = 8, health = 7, cure = 6)
+    Vestal.policies.SetPolicyWeights(death = 11, kill = 10, rank = 9, stun = 8, turn = 7, heal = 6)
 
 def CreateDataFrame(data):
     # Prepare a list of rows.
@@ -190,7 +196,8 @@ def CreateDataFrame(data):
     df = pd.DataFrame(rows)
 
     # Display the DataFrame
-    print(df)
+    if globals.show_data_frame:
+        print(df)
 
 def main():
     
@@ -309,7 +316,8 @@ def main():
     policy_evaluator.EvaluateHealthScore(grid)
     
     # Display Action Log
-    CreateDataFrame(policy_evaluator.actions_log)  
+    if globals.show_data_frame:
+        CreateDataFrame(policy_evaluator.actions_log)  
 
 def MyTest():
     # Heroes

@@ -11,7 +11,7 @@ class PlagueDoctor(Character):
         
         super().__init__(True, +0, 0.02, (4, 7), 0, 0.00, 7, 22, position, actions_dict, 0.20, 0.20, 0.60, 0.50, 0.20, 0.67) # Set HP Back to 22
         
-        noxious_blast_blight = StatusEffects("Blight", 3, 2.0, 5, "dot")
+        noxious_blast_blight = StatusEffects("Blight", 3, 1.0, 5, "dot")
         noxious_blast = Attacks((1, 2, 3), (1, 2), [lambda: StatusEffects("Blight", 3, 2.0, 5, "dot")], 95 , (int(self.damage_base[0] * 0.20), int(self.damage_base[1] * 0.20)), 0.05, name = "Noxious_Blast") # Change Accuracy back to 95
         
         plague_grenade_blight = StatusEffects("Blight", 3, 1.0, 4, "dot")
