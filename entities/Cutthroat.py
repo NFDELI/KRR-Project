@@ -1,6 +1,7 @@
 from entities.Character import Character
 from actions.Attacks import Attacks
 from StatusEffects import StatusEffects
+import random
 
 class Cutthroat(Character):
     def __init__(self, position):
@@ -12,7 +13,7 @@ class Cutthroat(Character):
         
         # Shank with Bleed, default apply chance is 1.00
         shank_bleed = StatusEffects("Bleed", 3, 100.0, 1, "dot")
-        shank = Attacks((1, 2, 3), (1, 2, 3, 4), [lambda: StatusEffects("Bleed", 3, 100.0, 1, "dot")], 72.5, (4, 8), 0.06, name = "Shank")
+        shank = Attacks((1, 2, 3), (1, 2, 3, 4), [lambda: StatusEffects("Bleed", 3, 100.0, 1, "dot")], 72.5, (4, 8), 0.06, is_unlimited = True, name = "Shank")
         
         # Uppercut Slice with Knockback
         uppercut_slice_knockback = StatusEffects("Knockback", 1, 1.00, 1, "knockback")
@@ -58,12 +59,12 @@ class Cutthroat(Character):
                 action_to_use = shank
                 action_target = hero
                 break
-            elif(self.policies.IsActionUsable(slice_and_dice) and hero.position in shank.target_position):
+            elif(self.policies.IsActionUsable(slice_and_dice) and hero.position in slice_and_dice.target_position):
                 action_to_use = slice_and_dice
                 action_target = every_grid.herogrid_dict[1]
         
-        if not action_to_use or action_target:
-            action_to_use = slice_and_dice
+        if not action_to_use or not action_target:
+            action_to_use = random.choice([slice_and_dice, shank])
             action_target = every_grid.herogrid_dict[1]
         
         return action_to_use, action_target, every_grid.herogrid_dict

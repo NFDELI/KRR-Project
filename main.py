@@ -195,6 +195,7 @@ def RunSimulation(simulation_id):
         Junia.position : Junia
     }
     
+    # Make sure that cutthroat does Shank
     enemygrid_dict = {
         Mald.position : Mald,
         Axel.position : Axel,
@@ -243,6 +244,9 @@ def RunSimulation(simulation_id):
             if globals.show_visuals:
                 simulation_visuals.DisplayCharacterIntention(character_to_act, character_decision, character_target.position, stunned_result)
                 simulation_visuals.VisualPause()
+            
+            if not (grid.herogrid_dict and not all_values_of_class(grid.enemygrid_dict, Corpse)):
+                break
             
             character_to_act.DoAction(character_decision, target_grid[character_target.position], target_grid, policy_evaluator)
             if globals.show_visuals:
