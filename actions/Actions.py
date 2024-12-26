@@ -4,7 +4,6 @@ class Actions:
     position_req: tuple
     target_position: tuple
     limited_use: int
-    #apply_status_effects: list
     crit = float
 
     def __init__(self, is_player_action, is_attack, position_req, target_position, limited_use, apply_status_effects, crit = 0, is_buff = False, is_heal = False):

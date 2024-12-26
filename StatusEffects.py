@@ -2,6 +2,14 @@ import os
 import pandas as pd
 
 class StatusEffects:
+    """
+    STATE VARIABLES:
+    1. duration: (self.duration) This variable determines how long will the status effect last. (For example, duration of 3 will last for 3 rounds)
+    2. effect_Value: (self.effect_value) This variable determines the effect_value of the status effect per round. (For example, effect_value of 5 with type Bleed or Blight, means that the character
+        will take 5 damage from the effect when they take their turn.)
+    3. effect_name: (self.name) This variable determines which effect is being applied. (Such as Blight, Bleed, Stun, etc...)
+    # Note: Same status effects will stack upon one another, except for stun.
+    """
     def __init__(self, name, duration, apply_chance, effect_value = None, effect_type = None):
         self.name = name
         self.duration = duration

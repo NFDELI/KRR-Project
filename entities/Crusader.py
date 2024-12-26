@@ -4,7 +4,12 @@ from StatusEffects import StatusEffects
 from actions.Buffs import Buffs
 
 class Crusader(Character):
-    
+    """
+    DECISION VARIABLES:
+    1. actions_dict: A Dictionary of actions that each character can use.
+    """
+    # Attacks class format: position_req, target_position, apply_status_effects, accuracy, damage_range, crit, is_unlimited, 
+    #                                 is_multi_target, is_traget_friendly, is_stun , name
     def __init__(self, position):
         
         actions_dict  = {}

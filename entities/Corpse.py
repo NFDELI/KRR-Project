@@ -1,6 +1,11 @@
 from entities.Character import Character
 from actions.Attacks import Attacks
 class Corpse(Character):
+    """
+    STATE VARIABLES:
+    1. is_corpse
+    2. decay_counter
+    """
     # Corpse will have a portion of the owner's max hp.
     def __init__(self, position, owner_max_health, owner_team_grid):
         super().__init__(False, +0, 0.00, (0, 0), 0, 0, -999, int(owner_max_health * 0.5), position, {}, 0, 0.0, 0.0, 2.0, 2.0, -1)

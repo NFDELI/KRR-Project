@@ -175,6 +175,7 @@ class SimulationVisuals():
                     paused = False
                     # This will end the while loop of the simulation.
                     self.grid.round_counter = 999
+                    pygame.quit()
     
     def run(self):
         """Main game loop."""

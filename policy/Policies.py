@@ -2,6 +2,33 @@ import heapq
 import random
 
 class Policies:
+    """
+    STATE VARIABLES: (Attributes of characters and their current state are State Variables)
+    1. self.character: The current character choosing their action.
+    2. enemies: The current available enemies for each action in the grid. (for attacking)
+    3. teamates: The current available teamates for each action in the grid. (for buffs or healing)
+    4. enemy.health: Current enemy health.
+    5. enemy.is_stunned: Characters won't stun targets who are already stunned. (Stun effects do not stack)
+    6. enemy.is_corpse: Enemies who die leave corpses that take up position space and does not attack. (Less priority targets than living targets)
+    """
+    """
+    DECISION VARIABLES:
+    1. chosen_action_with_target
+    2. best_action
+    3. best_target
+    4. target_grid: Determines which grid to apply action on, friendly or enemy grid/team.
+    """
+    """
+    DECISION FUNCTIONS:
+    1. EvaluateDamageAction(): Calculates the priority of which targets to choose based on weights set.
+    2. BestHealPolicy(): Calculates the priority of healing actions based on the weights set.
+    3. CalculatePriority(): Calculates the priority of the action. Higher priority based on:
+                            -> can_kill
+                            -> can_stun
+                            -> enemy attributes (health, has_taken_action, rank/position, etc...)
+                            -> average_value of heal/attack action
+    4. CalculateMultiTargetPriority(): similar to CalculatePriority but for action that apply to multiple targets at the same time.
+    """
     def __init__(self, character, kill_weight = 0, stun_weight = 0, turn_weight = 0, rank_weight = 0, health_weight = 0, death_door_weight = 0, heal_weight = 0, damage_weight = 0, cure_weight = 0):
         self.character = character
         self.kill_weight = kill_weight
@@ -253,7 +280,6 @@ class Policies:
         return True
 
     def CalculateFirstTickDoT(self, action_value, enemy):
-        #print(type(action_value.apply_status_effects))
         # Add DoT damage if any.
         dot_damage = 0
         first_tick_damage = 0

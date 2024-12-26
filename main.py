@@ -15,6 +15,18 @@ import globals
 
 class Grid():
     def __init__(self, herogrid, enemygrid):
+        """
+        STATE VARIABLES:
+        1. Herogrid_dict
+        2. Enemygrid_dict
+        3. Round_Counter
+        
+        These dictionaries contain the data of each character in each team. (Data such as Health, Character_Actions, Status_Effects, etc..)
+        The Key of the dictionary represents the chartacter rank/position of each character in each team.
+        When one dictionary is empty, one side has won. (Either heroes or enemies.)
+        Round_Counter is the number of rounds elapsed per simulation. (A round ends after every character has does an action.)
+        """
+        
         self.herogrid_dict = herogrid
         self.enemygrid_dict = enemygrid
         self.round_counter = 0
@@ -25,12 +37,26 @@ class Grid():
         self.total_hero_max_health = total_max_health
 
 class PolicyEvaluator:
+    """
+    OBJECTIVE FUNCTIONS:
+    1. EvaluateHealthScore
+    2. EvaluateRound
+    
+    OBJECTIVE HELPER FUNCTIONS:
+    1. UpdateHeroDamage
+    2. UpdateEnemyDamage
+    3. UpdateHeroDied
+    4. UpdateEnemyDied
+    5. UpdateHeroHeal
+    6. UpdateHeroEnteredDeathDoor
+    """
     def __init__(self):
         self.total_hero_damage = 0
         self.total_hero_heal = 0
         self.total_enemy_damage = 0
         self.total_hero_entered_death_door = 0
         self.total_hero_died = 0
+        self.total_enemy_died = 0
         self.fight_end_score = 0
         self.actions_log = []
     
@@ -66,8 +92,11 @@ class PolicyEvaluator:
     def UpdateHeroDied(self):
         self.total_hero_died += 40
     
+    def UpdateEnemyDied(self):
+        self.total_enemy_died += 20
+    
     def EvaluateRound(self):
-        round_score = self.total_hero_damage + self.total_hero_heal - self.total_enemy_damage - self.total_hero_entered_death_door - self.total_hero_died
+        round_score = self.total_hero_damage + self.total_hero_heal - self.total_enemy_damage + self.total_enemy_died - self.total_hero_entered_death_door - self.total_hero_died
         self.fight_end_score += round_score
         self.ResetCounters()
         print(f"Round Score: {round_score}")
@@ -99,6 +128,13 @@ class PolicyEvaluator:
         self.total_hero_died = 0
     
 def GenerateNextRound(herogrid_dict, enemygrid_dict, grid):
+    """
+    EXOGENOUS INFORMATION:
+    1. Turn Order is determined randomly.
+    2. Initiative (in code: value.initiative = speed_rng + values.speed) is calculated by doing speed_rng (random integer value between 1 to 8) + character speed.
+    3. Higher Initiative value determines who move first.
+    """
+    
     grid.round_counter += 1
     print(f"Round {grid.round_counter} Started!")
     
@@ -162,7 +198,7 @@ def CreateDataFrame(data):
     df = pd.DataFrame(rows)
 
     # Display the DataFrame
-    if globals.show_data_frame:
+    if globals.show_text_data_frame:
         print(df)
     return df
 

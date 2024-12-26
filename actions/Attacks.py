@@ -2,6 +2,16 @@ from actions.Actions import Actions
 from StatusEffects import StatusEffects
 import random 
 class Attacks(Actions):
+    """
+    STATE VARIABLES:
+    1. position_req: This tuple determines which position must the character be to use the action. (This will effect which actions to use based on the character's current position)
+    2. target_position: This tuple determines which position must the targets be to be targetted by the action.
+    3. apply_status_effects: This array contains all the status effects that the action will apply. (Stun, Bleed, and Blight are considered during deciding an action.)
+    4. damage_range: This tuple will determine the Min and Max damage that the attack can do on the target.
+    5. is_multi_target: Determines if the attack will hit multiple targets at once.
+    6. is_stun: This Boolean is used to categorize attacks that can stun or not.
+    7. is_heal: This Boolean is used to categorize actions that can heal or not.
+    """
     def __init__(self, position_req, target_position, apply_status_effects, accuracy, damage_range, crit, is_unlimited = True, is_multi_target = False, stress_damage = 0, is_traget_friendly = False, is_stun = False, name = ""):
         super().__init__(is_player_action = True, is_attack=True, position_req=position_req, 
                     target_position=target_position, limited_use=0 if is_unlimited else float('inf'), 
@@ -20,7 +30,21 @@ class Attacks(Actions):
         self.is_stun = is_stun
         self.is_heal = False
         self.name = name
-        
+    
+    """
+    EXOGENOUS VARIABLES:
+    1. Hit_Rng_Result: Determines if the attack will hit or miss the target. (in code: self.accuracy - chosen_target.dodge)
+    2. Damage_Done: -Is_Crit, determines if the attack will critical hit or not.
+                    -Damage_Roll, determines the attack damage done on the target, which is based on 'damage_range'
+    3. IsEffectChance (is(EffectNameHere)Chance): -This variable determines if the status_effect will be successfully applied to the target. (in code: effect.apply_chance - chosen_target.effect_res)
+                        -Characters have specific resistances to each status effect.
+    """
+    """
+    TRANSITION VARIABLES:
+    1. IsHitSuccess: Results of whether the attack successfully hit the enemy.
+    2. IsEffectSuccess (is(EffectNameHere)Success) - Results of whether the status effect is successfully applied.
+    """
+    
     def __lt__(self, other):
         # Define how to compare two Attacks objects (e.g., based on their damage range)
         return self.damage_range < other.damage_range
@@ -60,15 +84,15 @@ class Attacks(Actions):
     def RngDamage(self, target):
         
         # Check if attack will crit
-        isCrit = random.random() < self.crit + target.extra_crit_taken
-        if(isCrit):
+        is_crit = random.random() < self.crit + target.extra_crit_taken
+        if(is_crit):
             # Fixed Crit damage of 150%
             damage_roll =  int(self.damage_range[1] * 1.5)
         else:
             # Not Crit, do normal damage range check.
             damage_roll = random.randint(self.damage_range[0], self.damage_range[1])
             
-        return (damage_roll, isCrit)
+        return (damage_roll, is_crit)
     
     def RngHit(self, chosen_target):
         total_hit_chance = self.accuracy - chosen_target.dodge

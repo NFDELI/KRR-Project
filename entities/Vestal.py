@@ -37,7 +37,7 @@ class Vestal(Character):
         self.judgement_img = "visuals/vestal_anim/Vestal_sprite_judgement.png"
         self.stun_img = "visuals/vestal_anim/Vestal_sprite_stun.png"
         
-        self.offset = (0, 100) # was (0, 100)
+        self.offset = (0, 100)
         self.scale = (150, 300)
         self.text_offset = (0, 0)
         self.name = "Vestal"

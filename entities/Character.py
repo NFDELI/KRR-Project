@@ -3,8 +3,23 @@ from StatusEffects import StatusEffects
 from utils.PositionUtils import update_positions
 import random
 class Character:
+    """
+    STATE VARIABLES:
+    1. accuracy_base: Determines the chances of an attack hitting an enemy
+    2. crit: Chances of character doing a critical hit on attack. (heroes only)
+    3. damage_base: Character damage base. (heroes only)
+    4. dodge: Chances of character dodging an attack.
+    5. protection: Reduces the amount of damage taken from attacks, percentage wise. (Excluding Bleeding and Blight damage)
+    6. speed: Higher Speed, higher chance to have more initiative.
+    7. health: The current health of character. (For enemies, they die when health goes to 0, for heroes, they will enter Death's Door)
+    8. max_health: The max health of character. Each character starts with Max Health values and their health cannot be healed over max health.
+    9. position: The current Position/Rank of each character, it determines which actions can be used and which actions can reach the character.
+    10. status_effects: A list that contains every status effects that the charcter currently has. (format: effect_name, effect_type, duration, effect_value)
+    11. actions_dict: A dictionary that contains all possible actions that a character can do. (Which contains details of each action as well.)
+    12. initiative: It is Exogenous Information at first due to randomness of speed_rng (random int from 1 to 8), but remains constant through out the round afterwards.
+    """
     is_player: bool
-    accuracy_base : int
+    accuracy_base: int
     crit : float
     damage_base: tuple
     dodge: int
@@ -186,6 +201,7 @@ class Character:
     
     def CheckMonsterCharacterHealth(self, policy_evaluator):
         if self.health <= 0:
+            policy_evaluator.UpdateEnemyDied()
             self.CharacterDies()
             return True
         return False
