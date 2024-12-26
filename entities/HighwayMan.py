@@ -1,8 +1,6 @@
 from entities.Character import Character
 from actions.Attacks import Attacks
 from StatusEffects import StatusEffects
-from actions.Buffs import Buffs
-
 class HighwayMan(Character):
     
     def __init__(self, position):

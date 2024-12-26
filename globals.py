@@ -49,3 +49,5 @@ hero_strategy = LoadHealthFocusStrategy
 
 # Loading Other Strategy Example:
 # hero_strategy = LoadDamageFocusStrategy
+
+# Need to show State Variables, Exogenous, Objective, Transition, Decision Variables.

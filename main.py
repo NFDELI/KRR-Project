@@ -1,5 +1,3 @@
-import numpy as np
-from my_utils import update_positions
 from my_utils import all_values_of_class
 from entities.Crusader import Crusader
 from entities.HighwayMan import HighwayMan
@@ -7,7 +5,6 @@ from entities.PlagueDoctor import PlagueDoctor
 from entities.Vestal import Vestal
 from entities.Cutthroat import Cutthroat
 from entities.Fusilier import Fusilier
-from entities.BoneCourtier import BoneCourtier
 from entities.Corpse import Corpse
 from visuals.PyGameVisuals import SimulationVisuals
 import random
@@ -15,8 +12,6 @@ from collections import deque
 import pandas as pd
 from pandasgui import show
 import globals
-
-from StatusEffects import StatusEffects
 
 class Grid():
     def __init__(self, herogrid, enemygrid):
@@ -43,7 +38,6 @@ class PolicyEvaluator:
         # Format of Log array:
         target_data = []
         value_data = []
-        print(f"HEREEEE ACTION NAME IS::: {action_name}")
         for _ in target:
             target_data.append((_.__class__.__name__, _.position))
         

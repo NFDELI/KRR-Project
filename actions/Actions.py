@@ -1,4 +1,3 @@
-from StatusEffects import StatusEffects 
 class Actions:
     is_player_action: bool
     is_attack: bool
