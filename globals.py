@@ -44,7 +44,7 @@ def LoadBackRankFocusStrategy(Crusader, HighwayMan, PlagueDoctor, Vestal):
 # These variables are settings for the simulation.
 show_visuals = True
 show_text_data_frame = False
-number_of_simulations = 5
+number_of_simulations = 1
 hero_strategy = LoadHealthFocusStrategy
 
 # Loading Other Strategy Example:

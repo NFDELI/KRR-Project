@@ -6,7 +6,7 @@ class Actions:
     limited_use: int
     crit = float
 
-    def __init__(self, is_player_action, is_attack, position_req, target_position, limited_use, apply_status_effects, crit = 0, is_buff = False, is_heal = False):
+    def __init__(self, is_player_action, is_attack, position_req, target_position, limited_use, apply_status_effects, crit = 0, is_buff = False, is_heal = False, name = " "):
         self.is_player_action = is_player_action
         self.is_attack = is_attack
         self.position_req = position_req
@@ -16,5 +16,11 @@ class Actions:
         self.crit = crit
         self.is_buff = is_buff
         self.is_heal = is_heal
+        self.name = ""
     
+    def __str__(self):
+        return self.name
+    
+    def __repr__(self):
+        return f"{self.name}"
     

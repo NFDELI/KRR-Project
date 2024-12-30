@@ -81,9 +81,16 @@ class Character:
         self.is_dead = False
         
         self.policies = Policies(self)
+        self.name = ""
         
     def __lt__(self, other):
         return self.health < other.health
+    
+    def __str__(self):
+        return self.name
+    
+    def __repr__(self):
+        return f"{self.name} at rank {self.position}"
     
     def StartTurn(self, policy_evaluator):
         

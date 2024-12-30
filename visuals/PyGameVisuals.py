@@ -15,7 +15,7 @@ class SimulationVisuals():
         
         # Set up the screen
         self.screen = pygame.display.set_mode((width, height))
-        pygame.display.set_caption("Pygame Basics")
+        pygame.display.set_caption("Darkest Dungeon Fight Simulator")
 
         # Define colors
         self.BLACK = (0, 0, 0)

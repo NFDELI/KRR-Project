@@ -35,7 +35,7 @@ class Crusader(Character):
         # self.actions_dict['bulwark_of_faith'] = bulwark_of_faith
         # self.actions_dict['inspiring_cry'] = inspiring_cry
         # This action is only used when the character cannot do any other action. (Usually due to mispositioning)
-        nothing = Attacks((1, 2, 3, 4), (1,), [], 0, (0, 0), 0, is_unlimited = True)
+        nothing = Attacks((1, 2, 3, 4), (1,), [], 0, (0, 0), 0, is_unlimited = True, name = "Nothing")
         self.actions_dict['nothing'] = nothing
         
         # Visual Images:
