@@ -8,3 +8,8 @@
 4. PyGame Controls:
     -> Press 'Enter' to step through the simulation.
     -> Quiting the PyGame window early will cause the simulation to end early with no data generated.
+
+5. There are summary comments made in scripts such as STATE VARIABLES, EXOGENOUS INFORMATION, TRANSITION FUNCTION, etc.. 
+    -> These summary comments are located at the top or near-top of some scripts.
+    -> Search for """ in each script for to find them.
+    -> An example of what action_dict (a dictionary containing decision variables), can be found in entities/Crusader.py. (Each Character have similar format)

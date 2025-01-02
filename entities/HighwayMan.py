@@ -25,7 +25,7 @@ class HighwayMan(Character):
         self.actions_dict['open_vein'] = open_vein
         
         # This action is only used for DEBUGGING!
-        nothing = Attacks((1, 2, 3, 4), (1,), [], 0, (0, 0), 0, is_unlimited = True, name = "Nothing", is_multi_target = False)
+        nothing = Attacks((1, 2, 3, 4), (self.position,), [], 0, (0, 0), 0, is_unlimited = True, name = "Nothing", is_multi_target = False)
         self.actions_dict['nothing'] = nothing
         
         self.idle_img = "visuals/highwayman_anim/Highwayman_sprite_combat.png"

@@ -23,19 +23,15 @@ class Crusader(Character):
         # Make sure to Round the Damage ranges into Integers or else it will cause errors!
         zealous_accusation = Attacks((1, 2), (1, 2), [], 85, (int(self.damage_base[0] * 0.6), int(self.damage_base[1] * 0.6)), -0.04, is_unlimited = True, is_multi_target = True, name = "Zealous_Accusation")
 
-        faith_mark = StatusEffects("Mark", 999, 300, -1, "mark")
-        faith_prot = StatusEffects("Increase_Prot", 999, 300, 0.2, "increase_prot")
-        bulwark_of_faith = Buffs((1, 2), [self.position], [lambda: StatusEffects("Mark", 999, 300, -1, "mark"), lambda:StatusEffects("Increase_Prot", 999, 300, 0.2, "increase_prot")], 1, False, name = "Bulwark_of_Faith")
-
-        inspiring_cry = Attacks((1, 2, 3, 4), (1, 2, 3, 4), [], 10.00, (0, 0), 0, True, stress_damage = -5, is_traget_friendly = True, name = "Inspiring_Cry")
+        battle_heal_effect = StatusEffects("Heal", 0, 999, (1, 1), "heal")
+        battle_heal = Buffs((3, 4), (1, 2, 3, 4), [battle_heal_effect], False, True, False, name = "Battle_Heal", is_heal = True)
         
         self.actions_dict['smite'] = smite
         self.actions_dict['stunning_blow'] = stunning_blow
         self.actions_dict['zealous_accusation'] = zealous_accusation
-        # self.actions_dict['bulwark_of_faith'] = bulwark_of_faith
-        # self.actions_dict['inspiring_cry'] = inspiring_cry
+        self.actions_dict['battle_heal'] = battle_heal
         # This action is only used when the character cannot do any other action. (Usually due to mispositioning)
-        nothing = Attacks((1, 2, 3, 4), (1,), [], 0, (0, 0), 0, is_unlimited = True, name = "Nothing")
+        nothing = Attacks((1, 2, 3, 4), (self.position,), [], 0, (0, 0), 0, is_unlimited = True, name = "Nothing")
         self.actions_dict['nothing'] = nothing
         
         # Visual Images:

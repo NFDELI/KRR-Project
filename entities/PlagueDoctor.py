@@ -31,7 +31,7 @@ class PlagueDoctor(Character):
         self.actions_dict["battlefield_medicine"] = battlefield_medicine
 
         # This action is only used when the character cannot do any other action. (Usually due to mispositioning)
-        nothing = Attacks((1, 2, 3, 4), (1,), [], 0, (0, 0), 0, is_unlimited = True, name = "Nothing")
+        nothing = Attacks((1, 2, 3, 4), (self.position,), [], 0, (0, 0), 0, is_unlimited = True, name = "Nothing")
         self.actions_dict['nothing'] = nothing
         
         self.idle_img = "visuals/doctor_anim/Plague_doctor_sprite_combat.png"

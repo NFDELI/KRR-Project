@@ -17,6 +17,13 @@ class Character:
     10. status_effects: A list that contains every status effects that the charcter currently has. (format: effect_name, effect_type, duration, effect_value)
     11. actions_dict: A dictionary that contains all possible actions that a character can do. (Which contains details of each action as well.)
     12. initiative: It is Exogenous Information at first due to randomness of speed_rng (random int from 1 to 8), but remains constant through out the round afterwards.
+    13. has_taken_action:
+    """
+    
+    """
+    TRANSITION FUNCTION:
+    1. StartTurn(): Applies the status_effects that the character currently has. If character is Stunned, they will skip their turn.
+    2. DoAction(): Takes the chosen target, chosen_action and makes sure that the action is valid to use. This function will apply attack damage, heal, and status effects.
     """
     is_player: bool
     accuracy_base: int

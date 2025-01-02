@@ -3,7 +3,7 @@ from StatusEffects import StatusEffects
 import random 
 class Attacks(Actions):
     """
-    STATE VARIABLES:
+    VARIABLES THAT SUPPORT DECISION VARIABLES:
     1. position_req: This tuple determines which position must the character be to use the action. (This will effect which actions to use based on the character's current position)
     2. target_position: This tuple determines which position must the targets be to be targetted by the action.
     3. apply_status_effects: This array contains all the status effects that the action will apply. (Stun, Bleed, and Blight are considered during deciding an action.)
@@ -11,6 +11,8 @@ class Attacks(Actions):
     5. is_multi_target: Determines if the attack will hit multiple targets at once.
     6. is_stun: This Boolean is used to categorize attacks that can stun or not.
     7. is_heal: This Boolean is used to categorize actions that can heal or not.
+    
+    The AI chooses which actions to use base on these variables too.
     """
     def __init__(self, position_req, target_position, apply_status_effects, accuracy, damage_range, crit, is_unlimited = True, is_multi_target = False, stress_damage = 0, is_traget_friendly = False, is_stun = False, name = ""):
         super().__init__(is_player_action = True, is_attack=True, position_req=position_req, 

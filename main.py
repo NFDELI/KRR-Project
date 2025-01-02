@@ -17,9 +17,9 @@ class Grid():
     def __init__(self, herogrid, enemygrid):
         """
         STATE VARIABLES:
-        1. Herogrid_dict
-        2. Enemygrid_dict
-        3. Round_Counter
+        1. herogrid_dict
+        2. enemygrid_dict
+        3. round_Counter
         
         These dictionaries contain the data of each character in each team. (Data such as Health, Character_Actions, Status_Effects, etc..)
         The Key of the dictionary represents the chartacter rank/position of each character in each team.
@@ -259,8 +259,8 @@ def RunSimulation(simulation_id):
         turn_order = GenerateNextRound(grid.herogrid_dict, grid.enemygrid_dict, grid)
 
         # Display Turn Order
-        # for i, character in enumerate(turn_order, start = 1):
-        #     print(f"{i}: {character.__class__.__name__} with initiative {character.initiative}")
+        for i, character in enumerate(turn_order, start = 1):
+            print(f"{i}: {character.__class__.__name__} with initiative {character.initiative}")
     
         while turn_order:
             if (not grid.herogrid_dict or (all_values_of_class(grid.enemygrid_dict, Corpse) or not grid.enemygrid_dict)):

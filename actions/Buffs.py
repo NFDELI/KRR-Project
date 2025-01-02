@@ -2,7 +2,7 @@ from actions.Actions import Actions
 import random
 class Buffs(Actions):
     """
-    STATE VARIABLES:
+    Decision VARIABLES:
     -> Similar to Attacks.py (position_req, target_position, etc...)
     """
     """

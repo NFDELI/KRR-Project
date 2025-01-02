@@ -13,10 +13,9 @@ class Policies:
     """
     """
     DECISION VARIABLES:
-    1. chosen_action_with_target
+    1. chosen_action_with_target (Used in RandomTargetPolicy Only)
     2. best_action
     3. best_target
-    4. target_grid: Determines which grid to apply action on, friendly or enemy grid/team.
     """
     """
     DECISION FUNCTIONS:

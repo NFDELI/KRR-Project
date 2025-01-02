@@ -42,7 +42,7 @@ class Vestal(Character):
         self.text_offset = (0, 0)
         self.name = "Vestal"
         
-        nothing = Attacks((1, 2, 3, 4), (1,), [], 0, (0, 0), 0, is_unlimited = True)
+        nothing = Attacks((1, 2, 3, 4), (self.position,), [], 0, (0, 0), 0, is_unlimited = True, name = "Nothing")
         self.actions_dict['nothing'] = nothing
         
     def GetAction(self, every_grid):
