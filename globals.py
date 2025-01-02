@@ -1,14 +1,12 @@
 # Scroll to the bottom to see simulation settings.
 # All strategies are here, simply pick which one to use/load at the bottom. (variable hero_strategy)
 
-def LoadBestStrategy(Crusader, HighwayMan, PlagueDoctor, Vestal):
+def LoadRoleStrategy(Crusader, HighwayMan, PlagueDoctor, Vestal):
     # Crusader has high single target damage and has a stun. (Mainly targets Front Ranks and Crusader is a Tank)
     # HighwayMan has good damage and can target multiple enemies. (Can Target Back Ranks)
     # PlagueDoctor can Deal a lot of Damage Over Time, stun, cure (heal DOTs) and attack the back ranks of enemies.
     # Vestal can Heal, Stun, and Damage single targets at the back ranks
-    
-    # Weights format: SetPolicyWeights(self, kill = 0, stun = 0, turn = 0, rank = 0, health = 0, death = 0, heal = 0):
-    
+    # Weights format: SetPolicyWeights(self, kill = 0, stun = 0, turn = 0, rank = 0, health = 0, death = 0, heal = 0, cure = 0):
     Crusader.policies.SetPolicyWeights(kill = 11, death = 10, turn = 9, stun = 8, health = 7, damage = 6)
     HighwayMan.policies.SetPolicyWeights(kill = 10, turn = 9, rank = 8, health = 7, damage = 6)
     PlagueDoctor.policies.SetPolicyWeights(death = 11, kill = 10, cure = 9, rank = 8, damage = 7, stun = 6, health = 5)
@@ -19,11 +17,19 @@ def LoadHealthFocusStrategy(Crusader, HighwayMan, PlagueDoctor, Vestal):
     # Characters that can stun will stun enemies to prevent upcoming damage.
     # Characters that can heal or cure, will heal often to prevent death blows and prevent DOT damage (bleed and blight)
     # Attacks that stun will still do damage, so it can kill enemies as well.
-    
     Crusader.policies.SetPolicyWeights(death = 11, stun = 10, turn = 9, kill = 8, health = 7)
     HighwayMan.policies.SetPolicyWeights(kill = 10, turn = 9, rank = 8, health = 7)
     PlagueDoctor.policies.SetPolicyWeights(death = 11, cure = 10, turn = 9, stun = 8, rank = 7, kill = 6)
-    Vestal.policies.SetPolicyWeights(death = 11, heal = 10, turn = 9, kill = 7, stun = 6)
+    Vestal.policies.SetPolicyWeights(death = 11, heal = 10, turn = 9, rank = 8, kill = 7, stun = 6)
+    
+def LoadHealthRoleStrategy(Crusader, HighwayMan, PlagueDoctor, Vestal):
+    # This Strategy mixes both the HealthFocus and Role Strategy together, with the main differences being:
+    # -> Vestal prioritizes healing more now.
+    # -> Plague Docotor prioritizes on applying damage over time now.
+    Crusader.policies.SetPolicyWeights(kill = 11, death = 10, turn = 9, stun = 8, health = 7, damage = 6)
+    HighwayMan.policies.SetPolicyWeights(kill = 10, rank = 9, turn = 8, health = 7, damage = 6)
+    PlagueDoctor.policies.SetPolicyWeights(death = 11, kill = 10, rank = 9, damage = 8, turn = 7, stun = 6)
+    Vestal.policies.SetPolicyWeights(death = 11, heal = 10, turn = 9, rank = 8, kill = 7, stun = 6)
 
 def LoadDamageFocusStrategy(Crusader, HighwayMan, PlagueDoctor, Vestal):
     # This strategy will focus on ONLY doing the highest damaging attacks to kill the enemies as fast as possible to prevent long fights.

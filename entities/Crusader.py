@@ -23,7 +23,7 @@ class Crusader(Character):
         # Make sure to Round the Damage ranges into Integers or else it will cause errors!
         zealous_accusation = Attacks((1, 2), (1, 2), [], 85, (int(self.damage_base[0] * 0.6), int(self.damage_base[1] * 0.6)), -0.04, is_unlimited = True, is_multi_target = True, name = "Zealous_Accusation")
 
-        battle_heal_effect = StatusEffects("Heal", 0, 999, (1, 1), "heal")
+        battle_heal_effect = StatusEffects("Heal", 0, 999, (2, 3), "heal")
         battle_heal = Buffs((3, 4), (1, 2, 3, 4), [battle_heal_effect], False, True, False, name = "Battle_Heal", is_heal = True)
         
         self.actions_dict['smite'] = smite

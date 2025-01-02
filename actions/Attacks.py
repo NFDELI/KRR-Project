@@ -34,7 +34,7 @@ class Attacks(Actions):
         self.name = name
     
     """
-    EXOGENOUS VARIABLES:
+    EXOGENOUS INFORMATION VARIABLES:
     1. Hit_Rng_Result: Determines if the attack will hit or miss the target. (in code: self.accuracy - chosen_target.dodge)
     2. Damage_Done: -Is_Crit, determines if the attack will critical hit or not.
                     -Damage_Roll, determines the attack damage done on the target, which is based on 'damage_range'
@@ -42,7 +42,7 @@ class Attacks(Actions):
                         -Characters have specific resistances to each status effect.
     """
     """
-    TRANSITION VARIABLES:
+    TRANSITION VARIABLES: (These variables play a big role to influence the next state)
     1. IsHitSuccess: Results of whether the attack successfully hit the enemy.
     2. IsEffectSuccess (is(EffectNameHere)Success) - Results of whether the status effect is successfully applied.
     """

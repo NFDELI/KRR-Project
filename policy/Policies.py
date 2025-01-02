@@ -19,14 +19,15 @@ class Policies:
     """
     """
     DECISION FUNCTIONS:
-    1. EvaluateDamageAction(): Calculates the priority of which targets to choose based on weights set.
-    2. BestHealPolicy(): Calculates the priority of healing actions based on the weights set.
-    3. CalculatePriority(): Calculates the priority of the action. Higher priority based on:
+    1. BestActionPolicy(): Returns the best action and best target based on the actions and target available at the current state.
+    2. EvaluateDamageAction(): Calculates the priority of which targets to choose based on weights set.
+    3. BestHealPolicy(): Calculates the priority of healing actions based on the weights set.
+    4. CalculatePriority(): Calculates the priority of the action. Higher priority based on:
                             -> can_kill
                             -> can_stun
                             -> enemy attributes (health, has_taken_action, rank/position, etc...)
                             -> average_value of heal/attack action
-    4. CalculateMultiTargetPriority(): similar to CalculatePriority but for action that apply to multiple targets at the same time.
+    5. CalculateMultiTargetPriority(): similar to CalculatePriority but for action that apply to multiple targets at the same time.
     """
     def __init__(self, character, kill_weight = 0, stun_weight = 0, turn_weight = 0, rank_weight = 0, health_weight = 0, death_door_weight = 0, heal_weight = 0, damage_weight = 0, cure_weight = 0):
         self.character = character

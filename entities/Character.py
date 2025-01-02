@@ -21,6 +21,12 @@ class Character:
     """
     
     """
+    EXOGENOUS INFORMATION:
+    1. CheckHeroHealth() function: When a hero is at death's door (Hp is 0), there is a chance of them dying when taking damage from any source.
+        -> The probability of the hero suriving a death blow (damage that could possibly kill the hero) is (100% - character.deatth_blow_res).
+    """
+    
+    """
     TRANSITION FUNCTION:
     1. StartTurn(): Applies the status_effects that the character currently has. If character is Stunned, they will skip their turn.
     2. DoAction(): Takes the chosen target, chosen_action and makes sure that the action is valid to use. This function will apply attack damage, heal, and status effects.
