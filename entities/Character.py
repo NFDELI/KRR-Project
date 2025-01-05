@@ -95,6 +95,7 @@ class Character:
         
         self.policies = Policies(self)
         self.name = ""
+        self.icon_offset = (0, 0)
         
     def __lt__(self, other):
         return self.health < other.health

@@ -14,7 +14,7 @@ from pandasgui import show
 import globals
 
 class Grid():
-    def __init__(self, herogrid, enemygrid):
+    def __init__(self, herogrid, enemygrid, simulation_id):
         """
         STATE VARIABLES:
         1. herogrid_dict
@@ -30,6 +30,7 @@ class Grid():
         self.herogrid_dict = herogrid
         self.enemygrid_dict = enemygrid
         self.round_counter = 0
+        self.simulation_id = simulation_id
         
         total_max_health = 0
         for hero in herogrid.values():
@@ -233,7 +234,7 @@ def RunSimulation(simulation_id):
         Miguel.position : Miguel,
     }
     
-    grid = Grid(herogrid_dict, enemygrid_dict)
+    grid = Grid(herogrid_dict, enemygrid_dict, simulation_id)
     policy_evaluator = PolicyEvaluator()
     if globals.show_visuals:
         simulation_visuals = SimulationVisuals(grid, policy_evaluator)

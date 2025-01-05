@@ -16,12 +16,23 @@ class Crusader(Character):
         
         super().__init__(True, +0, 0.05, (6, 12), 5, 0.00, 0, 33, position, actions_dict, 0.40, 0.30, 0.30, 0.30, 0.40, 0.67)
         
+        # Visual Images:
+        self.idle_img = "visuals/crusader_anim/Crusader_sprite_combat.png"
+        self.defend_img = "visuals/crusader_anim/Crusader_sprite_defend.png"
+        self.stun_img = "visuals/crusader_anim/Crusader_sprite_stun.png"
+        self.swing_img = "visuals/crusader_anim/Crusader_sprite_swing.png"
+        self.paper_img = "visuals/crusader_anim/Crusader_sprite_paper.png"
+        self.offset = (0, 0) # Was 0, 0
+        self.scale = (150, 400) # Was 150, 400
+        self.text_offset = (0, 0)
+        self.icon_offset = (0, 100)
+        
         stunning_blow_stun = StatusEffects("Stun", 1, 1.0, 1, "stun")
-        stunning_blow = Attacks((1, 2), (1, 2), [stunning_blow_stun], 90, (int(self.damage_base[0] * 0.5), int(self.damage_base[0] * 0.5)), +0, is_unlimited = True, is_multi_target = False, is_stun = True, name = "Stunning_Blow")
-        smite = Attacks((1, 2), (1, 2), [], 85, self.damage_base * 1, +0, is_unlimited = True, name = "Smite")
+        stunning_blow = Attacks((1, 2), (1, 2), [stunning_blow_stun], 90, (int(self.damage_base[0] * 0.5), int(self.damage_base[0] * 0.5)), +0, is_unlimited = True, is_multi_target = False, is_stun = True, name = "Stunning_Blow", anim_path = self.stun_img)
+        smite = Attacks((1, 2), (1, 2), [], 85, self.damage_base * 1, +0, is_unlimited = True, name = "Smite", anim_path = self.swing_img)
         
         # Make sure to Round the Damage ranges into Integers or else it will cause errors!
-        zealous_accusation = Attacks((1, 2), (1, 2), [], 85, (int(self.damage_base[0] * 0.6), int(self.damage_base[1] * 0.6)), -0.04, is_unlimited = True, is_multi_target = True, name = "Zealous_Accusation")
+        zealous_accusation = Attacks((1, 2), (1, 2), [], 85, (int(self.damage_base[0] * 0.6), int(self.damage_base[1] * 0.6)), -0.04, is_unlimited = True, is_multi_target = True, name = "Zealous_Accusation", anim_path = self.paper_img)
 
         battle_heal_effect = StatusEffects("Heal", 0, 999, (2, 3), "heal")
         battle_heal = Buffs((3, 4), (1, 2, 3, 4), [battle_heal_effect], False, True, False, name = "Battle_Heal", is_heal = True)
@@ -33,19 +44,9 @@ class Crusader(Character):
         # This action is only used when the character cannot do any other action. (Usually due to mispositioning)
         nothing = Attacks((1, 2, 3, 4), (self.position,), [], 0, (0, 0), 0, is_unlimited = True, name = "Nothing")
         self.actions_dict['nothing'] = nothing
-        
-        # Visual Images:
-        self.idle_img = "visuals/crusader_anim/Crusader_sprite_combat.png"
-        self.defend_img = "visuals/crusader_anim/Crusader_sprite_defend.png"
-        self.stun_img = "visuals/crusader_anim/Crusader_sprite_stun.png"
-        self.swing_img = "visuals/crusader_anim/Crusader_sprite_swing.png"
-        self.paper_img = "visuals/crusader_anim/Crusader_sprite_paper.png"
-        self.offset = (0, 0)
-        self.scale = (150, 400)
-        self.text_offset = (0, 0)
 
         self.name = "Crusader"
-
+        
     def GetAction(self, every_grid):
         parent_action = self.policies.BestActionPolicy(every_grid.herogrid_dict, every_grid.enemygrid_dict)
         return parent_action

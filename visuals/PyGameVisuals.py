@@ -40,11 +40,13 @@ class SimulationVisuals():
         # Text Fonts
         self.font = pygame.font.Font(None, 24)
         self.intention_font = pygame.font.Font(None, 24)
+        # self.chara_name_font = pygame.font.Font(None, 24)
         
         # Status Effect Icons:
         self.stun_icon = "visuals/status_effect_icons/Stun.png"
         self.bleed_icon = "visuals/status_effect_icons/Bleed.png"
         self.blight_icon = "visuals/status_effect_icons/Blight.png"
+        self.turn_icon = "visuals/TurnIcon.png"
 
     def handle_events(self):
         """Handle user input and events."""
@@ -62,10 +64,20 @@ class SimulationVisuals():
     
     def DisplayCurrentFrame(self):
         self.DisplayAllCharacters()
+        self.DisplayRoundCounter()
         self.DisplayHealthValues()
         self.DisplayCharacterStatusEffects()
 
         pygame.display.flip()
+    
+    def DisplayRoundCounter(self):
+        current_round = self.grid.round_counter
+        simulation_id = self.grid.simulation_id
+        
+        text_pos = ((self.screen_width * (1/2.5)), (self.screen_height * (1/8)))
+        text = self.font.render(f"Simulation: {simulation_id} Round: {current_round}", True, (199, 21, 133)) 
+        
+        self.screen.blit(text, text_pos)
     
     def DisplayCharacterStatusEffects(self):
         grid = self.grid
@@ -127,11 +139,27 @@ class SimulationVisuals():
         for position, hero in grid.herogrid_dict.items():
             idle_img = pygame.image.load(hero.idle_img)
             self.ApplyImageModify(hero, position, idle_img)
+            
+            hero_name_text = self.font.render(f"{hero.name}", True, (255, 255, 255))
+            text_pos = ((450 - ((position - 1) * self.position_offset_x)) + hero.offset[0], 650 + hero.text_offset[1])
+            self.screen.blit(hero_name_text, text_pos)
+            
+            if not hero.has_taken_action:
+                turn_img = pygame.image.load(self.turn_icon)
+                self.ApplyIconImageModify(hero, hero.position, turn_img, 520)
         
         for position, enemy in grid.enemygrid_dict.items():
             idle_img = pygame.image.load(enemy.idle_img)
             self.ApplyRightImageModify(enemy, position, idle_img)
             
+            enemy_name_text = self.font.render(f"{enemy.name}", True, (255, 255, 255))
+            text_pos = ((650 + ((position - 1) * self.position_offset_x)) + enemy.offset[0], 650 + enemy.text_offset[1])
+            self.screen.blit(enemy_name_text, text_pos)
+            
+            if not enemy.has_taken_action:
+                turn_img = pygame.image.load(self.turn_icon)
+                self.ApplyRightIconImageModify(enemy, enemy.position, turn_img, 715)
+                
         pygame.display.flip()
     
     def DisplayHealthValues(self):
@@ -157,11 +185,11 @@ class SimulationVisuals():
     
     def ApplyIconImageModify(self, hero, position_id, icon, initial_x):
         upscale_icon = pygame.transform.scale(icon, (30, 30))
-        self.screen.blit(upscale_icon, ((initial_x - ((position_id - 1) * self.effect_icon_offset_x)) + hero.offset[0], hero.offset[1] + 450)) 
+        self.screen.blit(upscale_icon, ((initial_x - ((position_id - 1) * self.effect_icon_offset_x)) + hero.offset[0], hero.offset[1] + hero.icon_offset[1] + 450)) 
     
     def ApplyRightIconImageModify(self, enemy, position_id, icon, initial_x):
         upscale_icon = pygame.transform.scale(icon, (30, 30))
-        self.screen.blit(upscale_icon, ((initial_x + ((position_id - 1) * self.effect_icon_offset_x)) + enemy.offset[0], enemy.offset[1] + 450))
+        self.screen.blit(upscale_icon, ((initial_x + ((position_id - 1) * self.effect_icon_offset_x)) + enemy.offset[0], enemy.offset[1] + enemy.icon_offset[1] + 450))
     
     def VisualPause(self):
         paused = True

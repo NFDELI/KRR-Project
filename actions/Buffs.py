@@ -14,7 +14,7 @@ class Buffs(Actions):
     1. actual_heal_value is the total amount of heals that the action does. (including multi-target heals)
     2. actual_cure_value is the total amount of heal-value done from removing DOT effects (Blleed and Blight) (Formula: actual_cure_value += effect.effect_value * effect.duration)
     """
-    def __init__(self, position_req, target_position, apply_status_effects, limited_use, is_unlimited = True, is_multi_target = False, name = " ", is_heal =  False):
+    def __init__(self, position_req, target_position, apply_status_effects, limited_use, is_unlimited = True, is_multi_target = False, name = "", is_heal =  False, anim_path = ""):
         super().__init__(is_player_action = True, is_attack=False, position_req=position_req, 
                     target_position=target_position, limited_use=limited_use if is_unlimited else float('inf'), 
                     apply_status_effects=apply_status_effects, crit=0)
@@ -27,6 +27,7 @@ class Buffs(Actions):
         self.is_buff = True
         self.is_heal = is_heal
         self.name = name
+        self.anim_path = anim_path
     
     def DoAction(self, caster, chosen_target, policy_evaluator):
         if self.is_unlimited or self.limited_use > 0:

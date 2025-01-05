@@ -14,7 +14,7 @@ class Attacks(Actions):
     
     The AI chooses which actions to use base on these variables too.
     """
-    def __init__(self, position_req, target_position, apply_status_effects, accuracy, damage_range, crit, is_unlimited = True, is_multi_target = False, stress_damage = 0, is_traget_friendly = False, is_stun = False, name = ""):
+    def __init__(self, position_req, target_position, apply_status_effects, accuracy, damage_range, crit, is_unlimited = True, is_multi_target = False, stress_damage = 0, is_traget_friendly = False, is_stun = False, name = "", anim_path = ""):
         super().__init__(is_player_action = True, is_attack=True, position_req=position_req, 
                     target_position=target_position, limited_use=0 if is_unlimited else float('inf'), 
                     apply_status_effects=apply_status_effects, crit=crit)
@@ -32,6 +32,7 @@ class Attacks(Actions):
         self.is_stun = is_stun
         self.is_heal = False
         self.name = name
+        self.anim_path = anim_path
     
     """
     EXOGENOUS INFORMATION VARIABLES:
