@@ -48,9 +48,9 @@ def LoadBackRankFocusStrategy(Crusader, HighwayMan, PlagueDoctor, Vestal):
     Vestal.policies.SetPolicyWeights(death = 11, kill = 10, rank = 9, stun = 8, turn = 7, heal = 6)
 
 # These variables are settings for the simulation.
-show_visuals = False
+show_visuals = True
 show_text_data_frame = False
-number_of_simulations = 10
+number_of_simulations = 1
 hero_strategy = LoadHealthFocusStrategy
 
 # Loading Other Strategy Example:
