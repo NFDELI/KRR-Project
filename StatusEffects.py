@@ -1,6 +1,15 @@
+import os
 import pandas as pd
 
 class StatusEffects:
+    """
+    STATE VARIABLES:
+    1. duration: (self.duration) This variable determines how long will the status effect last. (For example, duration of 3 will last for 3 rounds)
+    2. effect_Value: (self.effect_value) This variable determines the effect_value of the status effect per round. (For example, effect_value of 5 with type Bleed or Blight, means that the character
+        will take 5 damage from the effect when they take their turn.)
+    3. effect_name: (self.name) This variable determines which effect is being applied. (Such as Blight, Bleed, Stun, etc...)
+    # Note: Same status effects will stack upon one another, except for stun.
+    """
     def __init__(self, name, duration, apply_chance, effect_value = None, effect_type = None):
         self.name = name
         self.duration = duration
@@ -8,28 +17,19 @@ class StatusEffects:
         self.effect_type = effect_type
         self.apply_chance = apply_chance
     
-    def AddEffect(self, target):
-        if(self.name == "Stun"):
-            target.is_stunned = True
-            print(f"{target.__class__.__name__} is stunned for {self.duration} turn(s)!")
-        elif(self.name == "Bleed"):
-            target.is_bleeding = True
-            print(f"{target.__class__.__name__} is bleeding with damage of {self.effect_value} for {self.duration} turn(s)!")
-        elif(self.name == "Blight"):
-            target.is_blighted = True
-            print(f"{target.__class__.__name__} is blighted with damage of {self.effect_value} for {self.duration} turn(s)!")
-    
     def RemoveEffect(self, target):
 
-        # Python read excel: https://www.geeksforgeeks.org/reading-excel-file-using-python/
-        # Try putting this into an Excel Spreadsheet to be more efficient.
         # x could be self.name variable
         # y = target's variable to be changed
         # z = text from the spreadsheet
         # a = type of variable change (+=, -=, or reset)
         
-        effects_df = pd.read_excel("effects_data.xlsx")
-        
+        # Get the absolute path to the script's directory
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        file_path = os.path.join(script_dir, "effects_data.xlsx")
+
+        # Read the Excel file
+        effects_df = pd.read_excel(file_path, engine="openpyxl")
         effect_data = effects_df[effects_df["EffectName"] == self.name].iloc[0]
     
         # Get attribute name, reset/modifier, and operation type
@@ -40,6 +40,7 @@ class StatusEffects:
         
         if operation  == "reset":
             setattr(target, attribute_name, getattr(target, reset_value) if reset_value else False)
+            print(f"{attribute_name} has been reset into {reset_value}!")
         elif operation == "+=":
             setattr(target, attribute_name, getattr(target, attribute_name) + self.effect_value)
         elif operation == "-=":
